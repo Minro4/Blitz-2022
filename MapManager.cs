@@ -47,7 +47,7 @@ namespace Blitz2022
         {
             try
             {
-                var closestEnemy = UnitManager.enemies.OrderBy(enemy => Distance(pos, enemy.position)).First();
+                var closestEnemy = UnitManager.enemies.Where(enemie => enemie.hasSpawned).OrderBy(enemy => Distance(pos, enemy.position)).First();
                 return Distance(pos, closestEnemy.position);
             }
             catch (InvalidOperationException)
