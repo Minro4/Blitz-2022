@@ -149,15 +149,8 @@ namespace Blitz2022
             {
                 if (unit.teamId != MapManager.message.teamId && unit.hasDiamond)
                 {
-                    //position de l'ennemi dans l'ordre du tour
-                    int enemyTeamIndex = MapManager.message.teamPlayOrderings[MapManager.message.tick].Select((s, i) => new { teamId = s, index = i })
-                        .FirstOrDefault(x => x.teamId.Equals(unit.teamId)).index;
-                    //position de notre �quipe dans l'ordre du tour
-                    int myTeamIndex = MapManager.message.teamPlayOrderings[MapManager.message.tick].Select((s, i) => new { teamId = s, index = i })
-                        .FirstOrDefault(x => x.teamId.Equals(MapManager.message.teamId)).index;
-
-                    //Si on jour avant, on le vine
-                    if (myTeamIndex < enemyTeamIndex)
+                    //Si on joue avant, on le vine
+                    if (UnitManager.MyTeamPlaysBefore(unit.teamId))
                     {
                         targetVinePos = unit.position;
                         return 5000;
@@ -178,6 +171,7 @@ namespace Blitz2022
             {
                 var bestDiamond = closestFreeDiamonds.First();
                 targetMovePos = bestDiamond.position;
+                bestDiamond.setUnavailable();
                 return bestDiamond.Value();
             }
 
@@ -190,7 +184,7 @@ namespace Blitz2022
                 return closest.Value() * 1.25;
             }
 
-            var closestFriendlyDiamond = diamondsByValue.First();
+            var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).First();
             targetMovePos = MapManager.FirstAvailablePositionToGoTo(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
             return closestFriendlyDiamond.Value() * 0.5;
         }
@@ -203,13 +197,21 @@ namespace Blitz2022
         {
         }
 
+        private bool killViner;
+        private Map.Position killTarget;
+
         public override Action NextAction()
         {
             double drop = DropValue();
             double move = MoveValue();
             double upgrade = UpgradeValue();
 
-            if (drop > move && drop > upgrade)
+            if (killViner)
+            {
+                killViner = false;
+                return new Action(UnitActionType.ATTACK, id, killTarget);
+            }
+            else if (drop > move && drop > upgrade)
             {
                 return DropAction();
             }
@@ -264,8 +266,14 @@ namespace Blitz2022
                         return (diamond.points + diamond.summonLevel) * 2;
                     }
                 }
-
                 // no escape possible
+                Unit viner = MapManager.vinableFrom(position).First();
+                if (!UnitManager.MyTeamPlaysBefore(viner.teamId))
+                {
+                    killViner = true;
+                    killTarget = viner.position;
+                }
+                
                 return 0;
             }
 

@@ -80,6 +80,14 @@ namespace Blitz2022
             spawnPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.SPAWN && !MapManager.isPlayerOnPosition(position)).ToList();
             wallPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.WALL).ToList();
             emptyPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.EMPTY).ToList();
+
+            
+            var alliesWithDiamonds = UnitManager.allies.Where(ally => ally.diamondId != null).ToList();
+            if (alliesWithDiamonds.Count() != 0){
+                foreach (var ally in alliesWithDiamonds){
+                    message.map.diamonds.Where(d => d.id == ally.diamondId).FirstOrDefault().setUnavailable();
+                }
+            }
         }
 
         public static int Distance(Map.Position from, Map.Position to)

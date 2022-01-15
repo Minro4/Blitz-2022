@@ -54,5 +54,21 @@ namespace Blitz2022
             }
             return AdjacentEnemies;
         }
+
+        public static bool MyTeamPlaysBefore(string teamId)
+        {
+            //position de l'ennemi dans l'ordre du tour
+            int enemyTeamIndex = MapManager.message.teamPlayOrderings[MapManager.message.tick].Select((s, i) => new { teamId = s, index = i })
+                .FirstOrDefault(x => x.teamId.Equals(teamId)).index;
+            //position de notre �quipe dans l'ordre du tour
+            int myTeamIndex = MapManager.message.teamPlayOrderings[MapManager.message.tick].Select((s, i) => new { teamId = s, index = i })
+                .FirstOrDefault(x => x.teamId.Equals(MapManager.message.teamId)).index;
+
+            //Si on jour avant, on le vine
+            if (myTeamIndex < enemyTeamIndex)
+                return true;
+            
+            return false;
+        }
     }
 }
