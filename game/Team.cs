@@ -87,9 +87,29 @@ namespace Blitz2022
             return AdjacentPositions().Where(pos => MapManager.isWalkable(position, pos) && !MapManager.isPlayerOnPosition(pos)).ToList();
         }
 
+   
         public List<Position> DropablePositions()
         {
-            return WalkableAdjacentPositions();
+            List<Position> ajdPos = new List<Position>();
+
+            foreach(Position pos in WalkableAdjacentPositions()) 
+            {
+                bool valid = true;
+                foreach (Unit unit in UnitManager.enemies) 
+                {
+                    if (unit.position != null && unit.position.Equals(pos)) 
+                    {
+                        valid = false;
+                    }
+                }
+                if (valid)
+                {
+                    ajdPos.Add(pos);
+                }
+
+            }
+            
+            return ajdPos;
         }
 
         public List<Position> AdjacentAllies()
