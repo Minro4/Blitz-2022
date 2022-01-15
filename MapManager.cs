@@ -48,6 +48,13 @@ namespace Blitz2022
             //TODO
             return new List<Map.Diamond>();
         }
+
+        public static List<Map.Diamond> AvailableDiamondsByDistance(Map.Position from)
+        {
+            List<Map.Diamond> diamondsByDistance = DiamondsByDistance(from);
+            return diamondsByDistance.Where(x => x.isAvailable).ToList();
+        }
+
         public static Map.Diamond GetClosestDiamond(Map.Position from)
         {
             return DiamondsByDistance(from).First();
@@ -180,10 +187,9 @@ namespace Blitz2022
             return 1000;
         }
 
-        /*
         public static bool IsTheClosestUnitToPosition(Map.Position from, Map.Position to)
         {
-            
-        }*/
+            return true;
+        }
     }
 }

@@ -85,14 +85,27 @@ namespace Blitz2022
 
         public int KillValue()
         {
-            //TODO
+            
             return 0;
         }
 
         public int MoveValue()
         {
-            //TODO
-            return 0;
+            List<Diamond> diamondsByDistance = MapManager.AvailableDiamondsByDistance(this.position);
+            int maxvalue = 0;
+
+            foreach(Diamond diamond in diamondsByDistance)
+            {
+                if(MapManager.IsTheClosestUnitToPosition(this.position, diamond.position))
+                {
+                    //TODO
+                    //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
+                    int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
+                    maxvalue = Math.Max(maxvalue, diamondValue);
+                }
+            }
+
+            return maxvalue;
         }
     }
 
