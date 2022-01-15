@@ -163,7 +163,7 @@ namespace Blitz2022
             return -1;
         }
 
-        public int MoveValue()
+        public double MoveValue()
         {
             List<Diamond> diamondsByValue = MapManager.AvailableDiamondsByValue(this.position);
 
@@ -174,10 +174,9 @@ namespace Blitz2022
                 targetMovePos = bestDiamond.position;
                 return bestDiamond.Value();
             }
-
-            foreach (Diamond diamond in diamondsByDistance)
-                var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned() || diamond.isFree()).ToList();
-            if (enemyDiamonds.Any())
+            
+            var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned() || diamond.isFree()).ToList();
+            if (diamondsByValue.Any())
             {
                 var closest = enemyDiamonds.First();
                 targetMovePos = closest.position;
