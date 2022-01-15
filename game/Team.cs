@@ -91,10 +91,11 @@ namespace Blitz2022
         {
             return WalkableAdjacentPositions();
         }
-        
+
         public List<Position> AdjacentAllies()
         {
-            return AdjacentPositions().Where(pos => UnitManager.allies.Select(ally => ally.position).ToList().Contains(pos));
+            var alliedPos = UnitManager.allies.Select(ally => ally.position);
+            return AdjacentPositions().Where(pos => alliedPos.Contains(pos)).ToList();
         }
     }
 
@@ -209,11 +210,11 @@ namespace Blitz2022
             {
                 return DropAction();
             }
-            if (killViner)
-            {
-                killViner = false;
-                return new Action(UnitActionType.ATTACK, id, killTarget);
-            }
+            /*  if (killViner)
+              {
+                  killViner = false;
+                  return new Action(UnitActionType.ATTACK, id, killTarget);
+              }*/
             else if (move > drop && move > upgrade)
             {
                 return MoveAction();
@@ -233,10 +234,11 @@ namespace Blitz2022
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft <= MapManager.message.teams.Count+2 && !DropablePositions().Any())
+            if (tickLeft <= MapManager.message.teams.Count + 2 && !DropablePositions().Any())
             {
                 return int.MaxValue;
             }
+
             if (tickLeft <= MapManager.message.teams.Count)
             {
                 return int.MaxValue;
@@ -245,7 +247,7 @@ namespace Blitz2022
             var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
             var otherTeamPlaysFirst = UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId);
             var minimumDistFromEnemy = 1 + (otherTeamPlaysFirst ? 1 : 0);
-            
+
             if (dist <= minimumDistFromEnemy)
             {
                 return int.MaxValue;
@@ -292,7 +294,7 @@ namespace Blitz2022
         {
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
-            
+
             var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
             var minDistanceToSummon = diamond.summonLevel + 1 + (UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId) ? 1 : 0);
             if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && dist > minDistanceToSummon)
@@ -322,6 +324,12 @@ namespace Blitz2022
             if (dropPosition.Count > 0)
             {
                 return new Action(UnitActionType.DROP, id, dropPosition[0]);
+            }
+
+            var alliedPos = AdjacentAllies();
+            if (alliedPos.Any())
+            {
+                return new Action(UnitActionType.DROP, id, alliedPos.First());
             }
             else
             {
