@@ -134,7 +134,7 @@ namespace Blitz2022
         public int MoveValue()
         {
             List<Diamond> diamondsByDistance = MapManager.AvailableDiamondsByDistance(this.position);
-            int maxvalue = 0;
+            int maxvalue = -1;
 
             foreach (Diamond diamond in diamondsByDistance)
             {
