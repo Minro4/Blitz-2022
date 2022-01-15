@@ -69,6 +69,14 @@ namespace Blitz2022
             public TileType tileType()
             {
                 MapManager.message.map.getTileTypeAt(this);
+            public override bool Equals(object obj)
+            {
+                if (obj is Position)
+                {
+                    return (obj as Position).x == this.x && (obj as Position).y == this.y;
+                }
+
+                return base.Equals(obj);
             }
         }
 

@@ -47,6 +47,13 @@ namespace Blitz2022
         {
             return message.map.diamonds.OrderBy(diamond => Distance(from,diamond.position));
         }
+
+        public static List<Map.Diamond> AvailableDiamondsByDistance(Map.Position from)
+        {
+            List<Map.Diamond> diamondsByDistance = DiamondsByDistance(from);
+            return diamondsByDistance.Where(x => x.isAvailable).ToList();
+        }
+
         public static Map.Diamond GetClosestDiamond(Map.Position from)
         {
             return DiamondsByDistance(from).First();
@@ -192,6 +199,11 @@ namespace Blitz2022
         public static bool isPlayerOnPosition(Map.Position position)
         {
             return UnitManager.units.Find(unit => unit.position == position) != null;
+        }
+        
+        public static bool IsTheClosestUnitToPosition(Map.Position from, Map.Position to)
+        {
+            return true;
         }
     }
 }
