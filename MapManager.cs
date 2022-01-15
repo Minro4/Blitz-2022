@@ -22,11 +22,14 @@ namespace Blitz2022
             //TODO
             message = messageParam;
             allPositions = new List<Map.Position>();
-            for (int x = 0; x < message.map.horizontalSize(); x++){
-                for (int y = 0; y < message.map.verticalSize(); y++){
-                    allPositions.Add(new Map.Position(x,y));
+            for (int x = 0; x < message.map.horizontalSize(); x++)
+            {
+                for (int y = 0; y < message.map.verticalSize(); y++)
+                {
+                    allPositions.Add(new Map.Position(x, y));
                 }
             }
+
             spawnPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.SPAWN).ToList();
             wallPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.WALL).ToList();
             emptyPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.EMPTY).ToList();
@@ -35,22 +38,29 @@ namespace Blitz2022
         public static int Distance(Map.Position from, Map.Position to)
         {
             var path = Pathfinding.Path(message, from, to);
-            if (path.Type == PathType.Complete)
-            {
-                return (int) path.Distance.Meters;
-            }
+
+            return (int)path.Distance.Meters;
+
 
             return int.MaxValue;
         }
+
         public static int MinimumDistanceFromEnemy(Map.Position pos)
         {
-            var closestEnemy = UnitManager.enemies.OrderBy(enemy => Distance(pos,enemy.position)).First();
-            return Distance(pos,closestEnemy.position);
+            try
+            {
+                var closestEnemy = UnitManager.enemies.OrderBy(enemy => Distance(pos, enemy.position)).First();
+                return Distance(pos, closestEnemy.position);
+            }
+            catch (InvalidOperationException)
+            {
+                return int.MaxValue;
+            }
         }
 
         public static List<Map.Diamond> DiamondsByDistance(Map.Position from)
         {
-            return message.map.diamonds.OrderBy(diamond => Distance(from,diamond.position)).ToList();
+            return message.map.diamonds.OrderBy(diamond => Distance(from, diamond.position)).ToList();
         }
 
         public static List<Map.Diamond> AvailableDiamondsByDistance(Map.Position from)
@@ -64,7 +74,7 @@ namespace Blitz2022
             return DiamondsByDistance(from).First();
         }
 
-        private static int getWallMaxX(Map.Position from) 
+        private static int getWallMaxX(Map.Position from)
         {
             int maxX = message.map.horizontalSize();
             for (int x = from.x; x >= 0 && x < maxX; x++)
@@ -128,9 +138,9 @@ namespace Blitz2022
             return 0;
         }
 
-        public static List<Unit> vinableFrom(Map.Position from) 
+        public static List<Unit> vinableFrom(Map.Position from)
         {
-            List<Unit> vinableUnit =new List<Unit>();
+            List<Unit> vinableUnit = new List<Unit>();
 
             int wallMaxX = getWallMaxX(from);
             int wallMinX = getWallMinX(from);
@@ -139,25 +149,24 @@ namespace Blitz2022
 
             foreach (Team team in message.teams)
             {
-                    foreach (Unit unit in team.units)
+                foreach (Unit unit in team.units)
+                {
+                    if (unit.position.y == from.y)
                     {
-                        if (unit.position.y == from.y)
+                        if (unit.position.x > wallMinX && unit.position.x < wallMaxX)
                         {
-                            if (unit.position.x > wallMinX && unit.position.x < wallMaxX)
-                            {
-                                vinableUnit.Add(unit);
-                            }
+                            vinableUnit.Add(unit);
                         }
-
-                        if (unit.position.x == from.x)
-                        {
-                            if (unit.position.y > wallMinY && unit.position.y < wallMaxY)
-                            {
-                                vinableUnit.Add(unit);
-                            }
-                        }
-
                     }
+
+                    if (unit.position.x == from.x)
+                    {
+                        if (unit.position.y > wallMinY && unit.position.y < wallMaxY)
+                        {
+                            vinableUnit.Add(unit);
+                        }
+                    }
+                }
             }
 
             return vinableUnit;
@@ -167,19 +176,18 @@ namespace Blitz2022
         {
             List<Unit> unites = vinableFrom(from);
 
-            foreach (Unit unite in unites) 
+            foreach (Unit unite in unites)
             {
-                if (unite.teamId == teamId) 
+                if (unite.teamId == teamId)
                 {
                     return true;
                 }
-                    
             }
 
             return false;
         }
 
-        public static bool isWallInGame(Map.TileType tile) 
+        public static bool isWallInGame(Map.TileType tile)
         {
             return tile == Map.TileType.SPAWN || tile == Map.TileType.WALL;
         }
@@ -190,7 +198,7 @@ namespace Blitz2022
             //In how many turns will this position be vinable if the player is from teamId
             return 1000;
         }
-        
+
         public static bool isWalkable(Map.Position from, Map.Position to)
         {
             return isEmpty(to) && !(from.tileType() == Map.TileType.EMPTY && to.tileType() == Map.TileType.SPAWN);
@@ -205,7 +213,7 @@ namespace Blitz2022
         {
             return UnitManager.units.Find(unit => unit.position == position) != null;
         }
-        
+
         public static bool IsTheClosestUnitToPosition(Map.Position from, Map.Position to)
         {
             return true;

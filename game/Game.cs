@@ -28,9 +28,15 @@ namespace Blitz2022
                 isAvailable = false;
             }
 
+            public bool isFree()
+            {
+                return isAvailable && ownerId == null;
+            }
+
             public bool IsClosest(Map.Position from)
             {
                 var distanceToDiamond = MapManager.Distance(from, position);
+                Console.WriteLine(distanceToDiamond);
                 if (distanceToDiamond == int.MaxValue)
                 {
                     return false;
@@ -38,6 +44,9 @@ namespace Blitz2022
 
                 var distances = UnitManager.units.Where(unit => !unit.hasDiamond).Select(unit => MapManager.Distance(unit.position, position));
                 var minDist = distances.Min();
+
+                Console.WriteLine("TEST0" + distances);
+                Console.WriteLine("TEST1" + minDist);
 
                 return distanceToDiamond <= minDist;
             }

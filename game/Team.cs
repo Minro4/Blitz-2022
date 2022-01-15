@@ -138,11 +138,13 @@ namespace Blitz2022
 
             foreach (Diamond diamond in diamondsByDistance)
             {
-                if (diamond.IsClosest(this.position))
+                if (diamond.isFree() && diamond.IsClosest(position))
                 {
                     //TODO
                     //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
+
                     int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
+
                     if (maxvalue <= diamondValue)
                     {
                         maxvalue = diamondValue;
@@ -153,8 +155,6 @@ namespace Blitz2022
 
             return maxvalue;
         }
-
-        
     }
 
     public class UnitWithDiamond : Unit
@@ -165,7 +165,6 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            
             double drop = DropValue();
             double move = MoveValue();
             double upgrade = UpgradeValue();
@@ -182,11 +181,10 @@ namespace Blitz2022
             {
                 return new Action(UnitActionType.SUMMON, id, position);
             }
-            else 
+            else
             {
                 return new Action(UnitActionType.NONE, id, position);
             }
-
         }
 
         public double DropValue()
@@ -199,15 +197,13 @@ namespace Blitz2022
             {
                 return 1000000;
             }
-            else 
+            else
             {
-                 return diamond.points;
+                return diamond.points;
             }
-           
         }
-        
 
-        
+
         public double MoveValue()
         {
             //TODO
@@ -220,33 +216,32 @@ namespace Blitz2022
 
         public double UpgradeValue()
         {
-            
             int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
             Diamond diamond = getDiamond();
 
             //TODO minus si ennemie trop proche
-            if (diamond.summonLevel < 5) 
+            if (diamond.summonLevel < 5)
             {
-                return tickLeft*(diamond.summonLevel+1) - diamond.summonLevel;
+                return tickLeft * (diamond.summonLevel + 1) - diamond.summonLevel;
             }
 
             return 0;
         }
 
-        public Diamond getDiamond() 
+        public Diamond getDiamond()
         {
-            foreach (Diamond diamond in MapManager.message.map.diamonds) 
+            foreach (Diamond diamond in MapManager.message.map.diamonds)
             {
-                if (diamond.position.Equals(position)) 
+                if (diamond.position.Equals(position))
                 {
                     return diamond;
-                }      
+                }
             }
 
             return null;
         }
 
-        public Action DropAction() 
+        public Action DropAction()
         {
             var dropPosition = DropablePositions();
             if (dropPosition.Count > 0)
@@ -265,8 +260,6 @@ namespace Blitz2022
             var positionFarthestFromEnemies = position.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos)).Last();
             return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies);
         }
-
-
     }
 
     public class UnitDead : Unit

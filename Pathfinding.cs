@@ -47,9 +47,9 @@ namespace Blitz2021
         public static bool isWalkable(Map.Position pos, GameMessage gameMessage, bool isFromInsideSpawn)
         {
             var tileType = gameMessage.map.getTileTypeAt(pos);
-            return tileType != Map.TileType.WALL && (!isFromInsideSpawn || tileType != Map.TileType.SPAWN);
+            return tileType != Map.TileType.WALL && (isFromInsideSpawn || tileType != Map.TileType.SPAWN);
         }
-
+ 
         public static Path Path(GameMessage gameMessage, Map.Position from, Map.Position to)
         {
             if (gameMessage.map.getTileTypeAt(from) == Map.TileType.SPAWN)
