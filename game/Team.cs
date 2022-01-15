@@ -3,7 +3,6 @@ using System.Linq;
 using System;
 using static Blitz2022.Action;
 using static Blitz2022.Map;
-using static Blitz2022.Action;
 
 namespace Blitz2022
 {
@@ -79,7 +78,7 @@ namespace Blitz2022
                 new Position(position.x, position.y - 1),
                 new Position(position.x + 1, position.y),
                 new Position(position.x - 1, position.y),
-            }.Where(pos => pos.isValid(MapManager.message)).ToList();
+            };
         }
 
         public List<Position> WalkableAdjacentPositions()
@@ -101,19 +100,25 @@ namespace Blitz2022
 
         private Map.Position targetKillPos;
         private Map.Position targetMovePos;
+        private Map.Position targetVinePos;
 
         public override Action NextAction()
         {
             int moveValue = MoveValue();
             int killValue = KillValue();
+            int vineValue = VineValue();
 
-            if (moveValue > killValue)
+            if (moveValue > killValue && moveValue > vineValue)
             {
                 return new Action(UnitActionType.MOVE, id, targetMovePos);
             }
-            else if (killValue > moveValue)
+            else if (killValue > moveValue && killValue > vineValue)
             {
                 return new Action(UnitActionType.ATTACK, id, targetKillPos);
+            }
+            else if(vineValue > moveValue && vineValue > killValue)
+            {
+                return new Action(UnitActionType.VINE, id, targetVinePos);
             }
 
             return new Action(UnitActionType.NONE, id, position);
@@ -121,13 +126,37 @@ namespace Blitz2022
 
         public int KillValue()
         {
-            var adjacentEnemy = UnitManager.AdjacentEnemies(this.position).Where(unit => unit.position.tileType() != TileType.SPAWN);
+            List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
             if (adjacentEnemy.Any())
             {
-                targetKillPos = adjacentEnemy.First().position;
+                targetKillPos = adjacentEnemy[0].position;
                 return 10000;
             }
 
+            return -1;
+        }
+
+        public int VineValue()
+        {
+            List<Unit> vineableUnits = MapManager.vinableFrom(this.position);
+
+            foreach(Unit unit in vineableUnits)
+            {
+                if (unit.teamId != MapManager.message.teamId && unit.hasDiamond)
+                {
+                    //position de l'ennemi dans l'ordre du tour
+                    int enemyTeamIndex = MapManager.message.teamPlayOrderings[0].Select((s, i) => new { teamId = s, index = i }).FirstOrDefault(x => x.teamId.Equals(unit.teamId)).index;
+                    //position de notre �quipe dans l'ordre du tour
+                    int myTeamIndex = MapManager.message.teamPlayOrderings[0].Select((s, i) => new { teamId = s, index = i }).FirstOrDefault(x => x.teamId.Equals(MapManager.message.teamId)).index;
+                    
+                    //Si on jour avant, on le vine
+                    if(myTeamIndex< enemyTeamIndex)
+                    {
+                        targetVinePos = unit.position;
+                        return 5000;
+                    }
+                }
+            }
             return -1;
         }
 
@@ -138,13 +167,11 @@ namespace Blitz2022
 
             foreach (Diamond diamond in diamondsByDistance)
             {
-                if (diamond.isFree() && diamond.IsClosest(position))
+                if (diamond.IsClosest(this.position))
                 {
                     //TODO
                     //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
-
                     int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
-
                     if (maxvalue <= diamondValue)
                     {
                         maxvalue = diamondValue;
@@ -155,6 +182,8 @@ namespace Blitz2022
 
             return maxvalue;
         }
+
+        
     }
 
     public class UnitWithDiamond : Unit
@@ -165,6 +194,7 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
+            
             double drop = DropValue();
             double move = MoveValue();
             double upgrade = UpgradeValue();
@@ -181,16 +211,17 @@ namespace Blitz2022
             {
                 return new Action(UnitActionType.SUMMON, id, position);
             }
-            else
+            else 
             {
                 return new Action(UnitActionType.NONE, id, position);
             }
+
         }
 
         public double DropValue()
         {
             //TODO si ennemie proche
-            int tickLeft = MapManager.message.remainingTicks();
+            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
             Diamond diamond = getDiamond();
 
             if (tickLeft < 5)
@@ -203,11 +234,13 @@ namespace Blitz2022
             }
             else
             {
-                return diamond.points;
+                 return diamond.points;
             }
+           
         }
+        
 
-
+        
         public double MoveValue()
         {
             //TODO
@@ -232,32 +265,33 @@ namespace Blitz2022
 
         public double UpgradeValue()
         {
-            int tickLeft = MapManager.message.remainingTicks();
+            
+            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
             Diamond diamond = getDiamond();
 
             //TODO minus si ennemie trop proche
             if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && 2 < MapManager.MinimumDistanceFromEnemy(position))
             {
-                return tickLeft * (diamond.summonLevel + 1) - diamond.summonLevel;
+                return tickLeft*(diamond.summonLevel+1) - diamond.summonLevel;
             }
 
             return 0;
         }
 
-        public Diamond getDiamond()
+        public Diamond getDiamond() 
         {
-            foreach (Diamond diamond in MapManager.message.map.diamonds)
+            foreach (Diamond diamond in MapManager.message.map.diamonds) 
             {
-                if (diamond.position.Equals(position))
+                if (diamond.position.Equals(position)) 
                 {
                     return diamond;
-                }
+                }      
             }
 
             return null;
         }
 
-        public Action DropAction()
+        public Action DropAction() 
         {
             var dropPosition = DropablePositions();
             if (dropPosition.Count > 0)
@@ -284,6 +318,8 @@ namespace Blitz2022
             }
             return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies.Last());
         }
+
+
     }
 
     public class UnitDead : Unit
@@ -294,15 +330,15 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            var optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
-            MapManager.GetClosestDiamond(optimalSpawnPosition)?.setUnavailable();
+            Map.Position optimalSpawnPosition;
+            optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
+            Array.Find(MapManager.message.map.diamonds, element => element == MapManager.DiamondsByDistance(optimalSpawnPosition).First()).isAvailable = false;
             return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
         }
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            var closestDiamond = MapManager.GetClosestDiamond(spawnFrom);
-            return closestDiamond != null ? MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom) : 0;
+            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom);
         }
     }
 

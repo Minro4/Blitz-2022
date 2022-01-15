@@ -41,9 +41,6 @@ namespace Blitz2022
             var path = Pathfinding.Path(message, from, to);
 
             return (int)path.Distance.Meters;
-
-
-            return int.MaxValue;
         }
 
         public static int MinimumDistanceFromEnemy(Map.Position pos)
