@@ -137,8 +137,7 @@ namespace Blitz2022
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            //TODO
-            return 0;
+            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position,spawnFrom);
         }
     }
 
