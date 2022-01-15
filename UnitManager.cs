@@ -31,7 +31,7 @@ namespace Blitz2022
             List<Unit> AdjacentEnemies = new List<Unit>();
             foreach(Unit unit in UnitManager.units)
             {
-                if (adjacentPos.Contains(unit.position))
+                if (adjacentPos.Contains(unit.position) && unit.teamId != MapManager.message.teamId)
                     AdjacentEnemies.Add(unit);
             }
             return AdjacentEnemies;
