@@ -172,7 +172,8 @@ namespace Blitz2022
         {
             List<Diamond> diamondsByValue = MapManager.AvailableDiamondsByValue(this.position);
 
-            var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosest(position) && diamond.isFree()).ToList();
+            //var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosest(position) && diamond.isFree()).ToList();
+            var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosestFromAlie(position,teamId) && diamond.isFree()).ToList();
             if (closestFreeDiamonds.Any())
             {
                 var bestDiamond = closestFreeDiamonds.First();

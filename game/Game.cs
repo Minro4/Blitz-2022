@@ -88,6 +88,21 @@ namespace Blitz2022
 
                 return distanceToDiamond <= minDist;
             }
+
+            public bool IsClosestFromAlie(Map.Position from, string teamId)
+            {
+                var distanceToDiamond = MapManager.Distance(from, position);
+                if (distanceToDiamond == int.MaxValue)
+                {
+                    return false;
+                }
+
+                var spawnedUnitsWithoutSpawned = UnitManager.units.Where(unit => !unit.hasDiamond && unit.hasSpawned && unit.teamId == teamId);
+                var distances = spawnedUnitsWithoutSpawned.Select(unit => MapManager.Distance(unit.position, position)).ToList();
+                var minDist = distances.Count > 0 ? distances.Min() : int.MaxValue;
+
+                return distanceToDiamond <= minDist;
+            }
         }
 
         public class Position
