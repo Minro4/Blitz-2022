@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Blitz2021;
 using static Blitz2022.Action;
 using static Blitz2022.Map;
 
@@ -21,17 +22,31 @@ namespace Blitz2022
         */
         public GameCommand nextMove(GameMessage gameMessage)
         {
-            Team myTeam = gameMessage.getTeamsMapById[gameMessage.teamId];
-
-            var unitsByLifeStatus = myTeam.units.GroupBy(unit => unit.hasSpawned).ToDictionary(group => group.Key, group => group.ToList());
-            List<Unit> deadUnits = unitsByLifeStatus.ContainsKey(false) ? unitsByLifeStatus[false] : new List<Unit>();
-            List<Unit> aliveUnits = unitsByLifeStatus.ContainsKey(true) ? unitsByLifeStatus[true] : new List<Unit>();
-
             List<Action> actions = new List<Action>();
-            actions.AddRange(deadUnits.Select(unit => new Action(UnitActionType.SPAWN, unit.id, findRandomSpawn(gameMessage.map))).ToList<Action>());
-            actions.AddRange(aliveUnits.Select(unit => new Action(UnitActionType.MOVE, unit.id, getRandomPosition(gameMessage.map.horizontalSize(), gameMessage.map.verticalSize()))).ToList<Action>());
+            try
+            {
+                Pathfinding.Initialize(gameMessage);
+                MapManager.Initialize(gameMessage);
 
-            return new GameCommand(actions);
+                Team myTeam = gameMessage.getTeamsMapById[gameMessage.teamId];
+
+                var unitsByLifeStatus = myTeam.units.GroupBy(unit => unit.hasSpawned).ToDictionary(group => group.Key, group => group.ToList());
+                List<Unit> deadUnits = unitsByLifeStatus.ContainsKey(false) ? unitsByLifeStatus[false] : new List<Unit>();
+                List<Unit> aliveUnits = unitsByLifeStatus.ContainsKey(true) ? unitsByLifeStatus[true] : new List<Unit>();
+
+                actions.AddRange(deadUnits.Select(unit => new Action(UnitActionType.SPAWN, unit.id, findRandomSpawn(gameMessage.map))).ToList<Action>());
+                actions.AddRange(aliveUnits.Select(unit =>
+                        new Action(UnitActionType.MOVE, unit.id, getRandomPosition(gameMessage.map.horizontalSize(), gameMessage.map.verticalSize())))
+                    .ToList<Action>());
+
+                return new GameCommand(actions);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("throw: " + ex);
+                Console.WriteLine("Trace: " + ex.StackTrace);
+                return new GameCommand(actions);
+            }
         }
 
         private Position findRandomSpawn(Map map)
@@ -48,10 +63,13 @@ namespace Blitz2022
                     {
                         spawns.Add(position);
                     }
+
                     y++;
                 }
+
                 x++;
             }
+
             return spawns[new Random().Next(spawns.Count)];
         }
 

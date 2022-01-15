@@ -26,7 +26,7 @@ namespace Blitz2022
 
         public virtual Action NextAction()
         {
-            return new Ac
+            return null;
         }
 
 

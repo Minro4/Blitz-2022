@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Blitz2021;
+using Roy_T.AStar.Paths;
+using Roy_T.AStar.Primitives;
 
 namespace Blitz2022
 {
@@ -14,8 +19,13 @@ namespace Blitz2022
 
         public static int Distance(Map.Position from, Map.Position to)
         {
-            //TODO
-            return 0;
+            var path = Pathfinding.Path(message, from, to);
+            if (path.Type == PathType.Complete)
+            {
+                return (int) path.Distance.Meters;
+            }
+
+            return int.MaxValue;
         }
 
         public static List<Map.Diamond> DiamondsByDistance(Map.Position from)

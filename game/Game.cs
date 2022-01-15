@@ -24,7 +24,7 @@ namespace Blitz2022
 
             public void setUnavailable()
             {
-                isAvailble = false;
+                isAvailable = false;
             }
             
             
