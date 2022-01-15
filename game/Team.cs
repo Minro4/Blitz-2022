@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using System;
+using static Blitz2022.Action;
 using static Blitz2022.Map;
 
 namespace Blitz2022
@@ -82,8 +85,10 @@ namespace Blitz2022
     {
         public override Action NextAction()
         {
-            //Toute essayer les positions de spawn possible
-            return null;
+            Map.Position optimalSpawnPosition;
+            optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
+            Array.Find(MapManager.message.map.diamonds,element => element == MapManager.DiamondsByDistance(optimalSpawnPosition).First()).isAvailable = false;
+            return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition) ;
         }
 
         public int SpawnValue(Map.Position spawnFrom)
