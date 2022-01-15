@@ -127,7 +127,7 @@ namespace Blitz2022
         public int KillValue()
         {
             List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
-            if (adjacentEnemy.Any())
+            if (adjacentEnemy.Where(x => MapManager.message.map.getTileTypeAt(x.position) != TileType.SPAWN).Any())
             {
                 targetKillPos = adjacentEnemy[0].position;
                 return 10000;
