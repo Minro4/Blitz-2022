@@ -25,7 +25,6 @@ namespace Blitz2022
             List<Action> actions = new List<Action>();
             try
             {
-                
                 Pathfinding.Initialize(gameMessage);
                 MapManager.Initialize(gameMessage);
                 UnitManager.Initialize(gameMessage);

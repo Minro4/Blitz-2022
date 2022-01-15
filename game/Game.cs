@@ -63,6 +63,12 @@ namespace Blitz2022
             public int x;
             public int y;
 
+
+            public bool isValid(GameMessage gameMessage)
+            {
+                return x >= 0 && y >= 0 && x < gameMessage.map.horizontalSize() && y < gameMessage.map.verticalSize();
+            }
+
             public override string ToString()
             {
                 return string.Format("P({0},{1})", this.x, this.y);

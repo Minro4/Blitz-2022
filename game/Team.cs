@@ -79,7 +79,7 @@ namespace Blitz2022
                 new Position(position.x, position.y - 1),
                 new Position(position.x + 1, position.y),
                 new Position(position.x - 1, position.y),
-            };
+            }.Where(pos => pos.isValid(MapManager.message)).ToList();
         }
 
         public List<Position> WalkableAdjacentPositions()
@@ -190,10 +190,10 @@ namespace Blitz2022
         public double DropValue()
         {
             //TODO si ennemie proche
-            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft == 2)
+            if (tickLeft == 1)
             {
                 return 1000000;
             }
@@ -216,7 +216,7 @@ namespace Blitz2022
 
         public double UpgradeValue()
         {
-            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
             //TODO minus si ennemie trop proche
@@ -271,11 +271,14 @@ namespace Blitz2022
         public override Action NextAction()
         {
             Map.Position optimalSpawnPosition;
-            if (MapManager.message.map.diamonds.Length > 0){
+            if (MapManager.message.map.diamonds.Length > 0)
+            {
                 optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
-                Array.Find(MapManager.message.map.diamonds, element => element == MapManager.AvailableDiamondsByDistance(optimalSpawnPosition).First()).isAvailable = false;
+                Array.Find(MapManager.message.map.diamonds, element => element == MapManager.AvailableDiamondsByDistance(optimalSpawnPosition).First())
+                    .isAvailable = false;
                 return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
             }
+
             return new Action(UnitActionType.NONE, this.id);
         }
 

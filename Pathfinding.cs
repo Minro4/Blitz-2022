@@ -13,12 +13,21 @@ namespace Blitz2021
         private static Grid gridOutsideSpawn;
 
         private readonly static Velocity traversalVelocity = Velocity.FromKilometersPerHour(100);
+        
+        private static bool isInitialized = false;
 
         public static void Initialize(GameMessage gameMessage)
         {
+        if (isInitialized)
+        {
+        return;
+        }
+        isInitialized = true;
             pathFinder = new PathFinder();
             gridInsideSpawn = CreateGrid(gameMessage, true);
             gridOutsideSpawn = CreateGrid(gameMessage, false);
+            
+            
         }
 
         public static Grid CreateGrid(GameMessage gameMessage, bool isFromInsideSpawn)
