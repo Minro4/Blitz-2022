@@ -20,7 +20,7 @@ namespace Blitz2022
             units = message.teams.SelectMany(team => team.units).ToList();
         }
 
-        public static List<Unit> AdjacentEnemy(Map.Position from)
+        public static List<Unit> AdjacentEnemies(Map.Position from)
         {
             List<Map.Position> adjacentPos = new List<Map.Position>();
             adjacentPos.Add(new Map.Position(from.x+1, from.y));
@@ -29,9 +29,10 @@ namespace Blitz2022
             adjacentPos.Add(new Map.Position(from.x, from.y-1));
 
             List<Unit> AdjacentEnemies = new List<Unit>();
-            foreach (Map.Position pos in adjacentPos)
+            foreach(Unit unit in UnitManager.units)
             {
-                
+                if (adjacentPos.Contains(unit.position))
+                    AdjacentEnemies.Add(unit);
             }
             return AdjacentEnemies;
         }

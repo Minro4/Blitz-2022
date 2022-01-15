@@ -85,7 +85,10 @@ namespace Blitz2022
 
         public int KillValue()
         {
-            
+            List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
+            if (adjacentEnemy.Any())
+                return 10000;
+
             return 0;
         }
 
@@ -96,9 +99,8 @@ namespace Blitz2022
 
             foreach(Diamond diamond in diamondsByDistance)
             {
-                if(MapManager.IsTheClosestUnitToPosition(this.position, diamond.position))
+                if(diamond.IsClosest(this.position))
                 {
-                    //TODO
                     //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
                     int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
                     maxvalue = Math.Max(maxvalue, diamondValue);
@@ -150,7 +152,8 @@ namespace Blitz2022
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position,spawnFrom);
+            //TODO
+            return 0;
         }
     }
 
