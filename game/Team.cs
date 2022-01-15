@@ -85,7 +85,7 @@ namespace Blitz2022
         {
             return AdjacentPositions().Where(pos => MapManager.isWalkable(position, pos)).ToList();
         }
-        
+
         public List<Position> DropablePositions()
         {
             return AdjacentPositions().Where(MapManager.isEmpty).ToList();
@@ -102,7 +102,7 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            if(MoveValue() > KillValue())
+            if (MoveValue() > KillValue())
             {
                 return new Action(UnitActionType.MOVE, id, targetPos);
             }
@@ -110,6 +110,7 @@ namespace Blitz2022
             {
                 return new Action(UnitActionType.ATTACK, id, targetPos);
             }
+
             return new Action(UnitActionType.NONE, id, position);
         }
 
@@ -121,7 +122,7 @@ namespace Blitz2022
                 targetPos = adjacentEnemy[0].position;
                 return 10000;
             }
-                
+
             return -1;
         }
 
@@ -130,14 +131,14 @@ namespace Blitz2022
             List<Diamond> diamondsByDistance = MapManager.AvailableDiamondsByDistance(this.position);
             int maxvalue = 0;
 
-            foreach(Diamond diamond in diamondsByDistance)
+            foreach (Diamond diamond in diamondsByDistance)
             {
-                if(diamond.IsClosest(this.position))
+                if (diamond.IsClosest(this.position))
                 {
                     //TODO
                     //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
                     int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
-                    if(maxvalue <= diamondValue)
+                    if (maxvalue <= diamondValue)
                     {
                         maxvalue = diamondValue;
                         targetPos = diamond.position;
@@ -146,6 +147,13 @@ namespace Blitz2022
             }
 
             return maxvalue;
+        }
+
+        public Action MoveAction()
+        {
+            var position = WalkableAdjacentPositions();
+            var positionFarthestFromEnemies = position.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos)).Last();
+            return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies);
         }
     }
 
