@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using static Blitz2022.Action;
 using static Blitz2022.Map;
+using static Blitz2022.Action;
 
 namespace Blitz2022
 {
@@ -149,12 +150,7 @@ namespace Blitz2022
             return maxvalue;
         }
 
-        public Action MoveAction()
-        {
-            var position = WalkableAdjacentPositions();
-            var positionFarthestFromEnemies = position.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos)).Last();
-            return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies);
-        }
+        
     }
 
     public class UnitWithDiamond : Unit
@@ -165,21 +161,104 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
+            
+            double drop = DropValue();
+            double move = MoveValue();
+            double upgrade = UpgradeValue();
+
+            if (drop > move && drop > upgrade)
+            {
+                var dropPosition = DropablePositions();
+                if (dropPosition.Count > 0)
+                {
+                    return new Action(UnitActionType.DROP, id, dropPosition[0]);
+                }
+                else 
+                {
+                    return new Action(UnitActionType.NONE, id, position);
+                }
+                
+            }
+            else if (move > drop && move > upgrade)
+            {
+                return MoveAction();
+            }
+            else if (upgrade > drop && upgrade > move)
+            {
+                return new Action(UnitActionType.SUMMON, id, position);
+            }
+            else 
+            {
+                return new Action(UnitActionType.NONE, id, position);
+            }
+
+        }
+
+        public double DropValue()
+        {
+            //TODO si ennemie proche
+            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            Diamond diamond = getDiamond();
+
+            if (tickLeft == 2)
+            {
+                return 1000000;
+            }
+            else 
+            {
+                 return diamond.points;
+            }
+           
+        }
+        
+
+        
+        public double MoveValue()
+        {
             //TODO
+            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            Diamond diamond = getDiamond();
+
+            return diamond.points + diamond.summonLevel;
+        }
+
+
+        public double UpgradeValue()
+        {
+            
+            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            Diamond diamond = getDiamond();
+
+            //TODO minus si ennemie trop proche
+            if (diamond.summonLevel < 5) 
+            {
+                return tickLeft*(diamond.summonLevel+1) - diamond.summonLevel;
+            }
+
+            return 0;
+        }
+
+        public Diamond getDiamond() 
+        {
+            foreach (Diamond diamond in MapManager.message.map.diamonds) 
+            {
+                if (diamond.position.Equals(position)) 
+                {
+                    return diamond;
+                }      
+            }
+
             return null;
         }
 
-        public int DropValue()
+        public Action MoveAction()
         {
-            //TODO
-            return 0;
+            var position = WalkableAdjacentPositions();
+            var positionFarthestFromEnemies = position.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos)).Last();
+            return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies);
         }
 
-        public int UpgradeValue()
-        {
-            //TODO
-            return 0;
-        }
+
     }
 
     public class UnitDead : Unit
