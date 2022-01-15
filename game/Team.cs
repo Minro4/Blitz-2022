@@ -171,7 +171,7 @@ namespace Blitz2022
             {
                 if (bestDiamond.isEnemyOwned())
                 {
-                    var firstAvailablePos = MapManager.FirstAvailablePositionToGoTo(position, bestDiamond.position);
+                    var firstAvailablePos = MapManager.FirstAvailablePositionToGoToExludingSpawn(position, bestDiamond.position);
                     targetMovePos = firstAvailablePos ?? bestDiamond.position;
                     return bestDiamond.ValueFromPosition(position);
                 }

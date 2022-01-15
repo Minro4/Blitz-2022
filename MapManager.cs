@@ -313,5 +313,37 @@ namespace Blitz2022
             
             return null;
         }
+
+        public static List<Map.Position> AdjacentPositions(Map.Position from)
+        {
+            return new List<Map.Position>()
+            {
+                new Map.Position(from.x,from.y + 1),
+                new Map.Position(from.x, from.y - 1),
+                new Map.Position(from.x + 1, from.y),
+                new Map.Position(from.x - 1, from.y),
+            }.Where(pos => pos.isValid(MapManager.message) && (message.map.getTileTypeAt(pos) != Map.TileType.WALL) && (message.map.getTileTypeAt(pos) != Map.TileType.SPAWN)).ToList();
+
+        }
+
+        public static Map.Position FirstAvailablePositionToGoToExludingSpawn(Map.Position from, Map.Position to)
+        {
+
+            foreach (Map.Position pos in AdjacentPositions(to))
+            {
+                var path = Path(from, to).Edges;
+                foreach (var edge in path.Reverse())
+                {
+                    var currentStep = new Map.Position((int)edge.End.Position.X, (int)edge.End.Position.Y);
+                    if (isEmpty(currentStep))
+                    {
+                        return currentStep;
+                    }
+                }
+            }
+
+            return null;
+        }
+
     }
 }
