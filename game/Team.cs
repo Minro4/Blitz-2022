@@ -99,17 +99,21 @@ namespace Blitz2022
         {
         }
 
-        private Map.Position targetPos;
+        private Map.Position targetKillPos;
+        private Map.Position targetMovePos;
 
         public override Action NextAction()
         {
-            if (MoveValue() > KillValue())
+            int moveValue = MoveValue();
+            int killValue = KillValue();
+
+            if (moveValue > killValue)
             {
-                return new Action(UnitActionType.MOVE, id, targetPos);
+                return new Action(UnitActionType.MOVE, id, targetMovePos);
             }
-            else if (KillValue() > MoveValue())
+            else if (killValue > moveValue)
             {
-                return new Action(UnitActionType.ATTACK, id, targetPos);
+                return new Action(UnitActionType.ATTACK, id, targetKillPos);
             }
 
             return new Action(UnitActionType.NONE, id, position);
@@ -120,7 +124,7 @@ namespace Blitz2022
             List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
             if (adjacentEnemy.Any())
             {
-                targetPos = adjacentEnemy[0].position;
+                targetKillPos = adjacentEnemy[0].position;
                 return 10000;
             }
 
@@ -142,7 +146,7 @@ namespace Blitz2022
                     if (maxvalue <= diamondValue)
                     {
                         maxvalue = diamondValue;
-                        targetPos = diamond.position;
+                        targetMovePos = diamond.position;
                     }
                 }
             }
