@@ -296,22 +296,6 @@ namespace Blitz2022
         {
             return true;
         }
-
-        public static Map.Position FirstAvailablePositionToGoTo(Map.Position from, Map.Position to)
-        {
-            var path = Path(from, to).Edges;
-            foreach (var edge in path.Reverse())
-            {
-                var pos = new Map.Position((int)edge.End.Position.X, (int)edge.End.Position.Y);
-                if (isEmpty(pos))
-                {
-                    return pos;
-                }
-            }
-
-            return null;
-        }
-
         public static List<Map.Position> AdjacentPositions(Map.Position from)
         {
             return new List<Map.Position>()
@@ -323,25 +307,25 @@ namespace Blitz2022
             }.Where(pos => pos.isValid(MapManager.message) && (message.map.getTileTypeAt(pos) != Map.TileType.WALL) && (message.map.getTileTypeAt(pos) != Map.TileType.SPAWN)).ToList();
 
         }
-
-        public static Map.Position FirstAvailablePositionToGoToExludingSpawn(Map.Position from, Map.Position to)
+        public static Map.Position FollowPathExludingSpawn(Map.Position from, Map.Position to)
         {
 
-            foreach (Map.Position pos in AdjacentPositions(to))
-            {
-                var path = Path(from, to).Edges;
-                foreach (var edge in path.Reverse())
-                {
-                    var currentStep = new Map.Position((int)edge.End.Position.X, (int)edge.End.Position.Y);
-                    if (isEmpty(currentStep))
-                    {
-                        return currentStep;
-                    }
-                }
-            }
-
-            return null;
+            Map.Position bestAdjacentPosition = AdjacentPositions(to).MinBy(pos => MapManager.Distance(from,pos));
+            return FollowPath(from , bestAdjacentPosition);
         }
 
+        public static Map.Position FollowPath(Map.Position from, Map.Position to)
+        {
+            var path = Path(from, to).Edges;
+            if (path.Count() > 0){
+                var nextPos = new Map.Position((int)path.First().End.Position.X , (int)path.First().End.Position.Y);
+                if (isPlayerOnPosition(nextPos)){
+                    // Cannot follow A* pathfinding so use shitty pathfinding
+                    return to;
+                }
+                return nextPos;
+            }
+            return null;
+        }
     }
 }

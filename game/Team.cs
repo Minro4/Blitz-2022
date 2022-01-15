@@ -172,7 +172,7 @@ namespace Blitz2022
             {
                 if (bestDiamond.isEnemyOwned())
                 {
-                    var firstAvailablePos = MapManager.FirstAvailablePositionToGoToExludingSpawn(position, bestDiamond.position);
+                    var firstAvailablePos = MapManager.FollowPathExludingSpawn(position, bestDiamond.position);
                     targetMovePos = firstAvailablePos ?? bestDiamond.position;
                     return bestDiamond.ValueFromPosition(position);
                 }
@@ -184,7 +184,7 @@ namespace Blitz2022
 
             var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).FirstOrDefault();
             if (closestFriendlyDiamond == null) return 0; // TODO Fix this better
-            targetMovePos = MapManager.FirstAvailablePositionToGoTo(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
+            targetMovePos = MapManager.FollowPath(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
             return closestFriendlyDiamond.Value() * 0.5;
         }
     }
