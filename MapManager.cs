@@ -54,12 +54,125 @@ namespace Blitz2022
             return null;
         }
 
+        private static int getWallMaxX(Map.Position from) 
+        {
+            int maxX = message.map.horizontalSize();
+            for (int x = from.x; x >= 0 && x < maxX; x++)
+            {
+                Map.Position currentPosition = new Map.Position(x, from.y);
+
+                if (isWallInGame(message.map.getTileTypeAt(currentPosition)))
+                {
+                    return x;
+                }
+            }
+
+            return message.map.horizontalSize();
+        }
+
+        private static int getWallMinX(Map.Position from)
+        {
+            int maxX = message.map.horizontalSize();
+            for (int x = from.x; x >= 0 && x < maxX; x--)
+            {
+                Map.Position currentPosition = new Map.Position(x, from.y);
+
+                if (isWallInGame(message.map.getTileTypeAt(currentPosition)))
+                {
+                    return x;
+                }
+            }
+
+            return 0;
+        }
+
+        private static int getWallMaxY(Map.Position from)
+        {
+            int maxY = message.map.verticalSize();
+            for (int y = from.y; y >= 0 && y < maxY; y++)
+            {
+                Map.Position currentPosition = new Map.Position(from.x, y);
+
+                if (isWallInGame(message.map.getTileTypeAt(currentPosition)))
+                {
+                    return y;
+                }
+            }
+
+            return message.map.verticalSize();
+        }
+
+        private static int getWallMinY(Map.Position from)
+        {
+            int maxY = message.map.verticalSize();
+            for (int y = from.y; y >= 0 && y < maxY; y--)
+            {
+                Map.Position currentPosition = new Map.Position(from.x, y);
+
+                if (isWallInGame(message.map.getTileTypeAt(currentPosition)))
+                {
+                    return y;
+                }
+            }
+
+            return 0;
+        }
+
+        public static List<Unit> vinableFrom(Map.Position from) 
+        {
+            List<Unit> vinableUnit =new List<Unit>();
+
+            int wallMaxX = getWallMaxX(from);
+            int wallMinX = getWallMinX(from);
+            int wallMaxY = getWallMaxY(from);
+            int wallMinY = getWallMinY(from);
+
+            foreach (Team team in message.teams)
+            {
+                    foreach (Unit unit in team.units)
+                    {
+                        if (unit.position.y == from.y)
+                        {
+                            if (unit.position.x > wallMinX && unit.position.x < wallMaxX)
+                            {
+                                vinableUnit.Add(unit);
+                            }
+                        }
+
+                        if (unit.position.x == from.x)
+                        {
+                            if (unit.position.y > wallMinY && unit.position.y < wallMaxY)
+                            {
+                                vinableUnit.Add(unit);
+                            }
+                        }
+
+                    }
+            }
+
+            return vinableUnit;
+        }
+
         public static bool isVinable(Map.Position from, string teamId)
         {
-            //TODO
+            List<Unit> unites = vinableFrom(from);
+
+            foreach (Unit unite in unites) 
+            {
+                if (unite.teamId == teamId) 
+                {
+                    return true;
+                }
+                    
+            }
+
             return false;
         }
 
+        public static bool isWallInGame(Map.TileType tile) 
+        {
+            return tile == Map.TileType.SPAWN || tile == Map.TileType.WALL;
+        }
 
         public static int WhenIsVinable(Map.Position from, string teamId)
         {
