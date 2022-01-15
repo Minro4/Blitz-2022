@@ -28,7 +28,7 @@ namespace Blitz2022
                 
                 Pathfinding.Initialize(gameMessage);
                 MapManager.Initialize(gameMessage);
-                UnitManager.ConvertTeamUnits(gameMessage);
+                UnitManager.Initialize(gameMessage);
                 
                 Team myTeam = gameMessage.getTeamsMapById[gameMessage.teamId];
 
