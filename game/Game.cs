@@ -19,8 +19,8 @@ namespace Blitz2022
 
             public int Value()
             {
-                //TODO
-                return points;
+                //TODO fix pour vrai
+                return points + 5 * MapManager.message.remainingTicks();
             }
 
             public void setUnavailable()
