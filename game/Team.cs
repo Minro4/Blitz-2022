@@ -121,10 +121,10 @@ namespace Blitz2022
 
         public int KillValue()
         {
-            List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
+            var adjacentEnemy = UnitManager.AdjacentEnemies(this.position).Where(unit => unit.position.tileType() != TileType.SPAWN);
             if (adjacentEnemy.Any())
             {
-                targetKillPos = adjacentEnemy[0].position;
+                targetKillPos = adjacentEnemy.First().position;
                 return 10000;
             }
 
@@ -270,21 +270,15 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            Map.Position optimalSpawnPosition;
-            if (MapManager.message.map.diamonds.Length > 0)
-            {
-                optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
-                Array.Find(MapManager.message.map.diamonds, element => element == MapManager.AvailableDiamondsByDistance(optimalSpawnPosition).First())
-                    .isAvailable = false;
-                return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
-            }
-
-            return new Action(UnitActionType.NONE, this.id);
+            var optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
+            MapManager.GetClosestDiamond(optimalSpawnPosition)?.setUnavailable();
+            return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
         }
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom);
+            var closestDiamond = MapManager.GetClosestDiamond(spawnFrom);
+            return closestDiamond != null ? MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom) : 0;
         }
     }
 

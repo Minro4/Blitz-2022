@@ -23,21 +23,13 @@ namespace Blitz2022
         public GameCommand nextMove(GameMessage gameMessage)
         {
             List<Action> actions = new List<Action>();
-            try
-            {
-                Pathfinding.Initialize(gameMessage);
-                MapManager.Initialize(gameMessage);
-                UnitManager.Initialize(gameMessage);
 
-                actions = UnitManager.units.Select(unit => unit.NextAction()).ToList();
-                return new GameCommand(actions);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("throw: " + ex);
-                Console.WriteLine("Trace: " + ex.StackTrace);
-                return new GameCommand(actions);
-            }
+            //Pathfinding.Initialize(gameMessage);
+            MapManager.Initialize(gameMessage);
+            UnitManager.Initialize(gameMessage);
+
+            actions = UnitManager.units.Select(unit => unit.NextAction()).ToList();
+            return new GameCommand(actions);
         }
 
         private Position findRandomSpawn(Map map)

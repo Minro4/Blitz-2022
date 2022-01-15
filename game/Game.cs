@@ -42,11 +42,9 @@ namespace Blitz2022
                     return false;
                 }
 
-                var distances = UnitManager.units.Where(unit => !unit.hasDiamond).Select(unit => MapManager.Distance(unit.position, position));
-                var minDist = distances.Min();
-
-                Console.WriteLine("TEST0" + distances);
-                Console.WriteLine("TEST1" + minDist);
+                var spawnedUnitsWithoutSpawned = UnitManager.units.Where(unit => !unit.hasDiamond && unit.hasSpawned);
+                var distances = spawnedUnitsWithoutSpawned.Select(unit => MapManager.Distance(unit.position, position)).ToList();
+                var minDist = distances.Count > 0 ? distances.Min() : int.MaxValue;
 
                 return distanceToDiamond <= minDist;
             }

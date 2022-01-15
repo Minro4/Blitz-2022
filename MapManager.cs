@@ -72,7 +72,7 @@ namespace Blitz2022
 
         public static Map.Diamond GetClosestDiamond(Map.Position from)
         {
-            return AvailableDiamondsByDistance(from).First();
+            return AvailableDiamondsByDistance(from).FirstOrDefault();
         }
 
         private static int getWallMaxX(Map.Position from)
