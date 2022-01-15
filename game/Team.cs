@@ -191,7 +191,7 @@ namespace Blitz2022
                 return closest.Value() * 1.25;
             }
 
-            var closestFriendlyDiamond = diamondsByValue.First();
+            var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).First();
             targetMovePos = MapManager.FirstAvailablePositionToGoTo(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
             return closestFriendlyDiamond.Value() * 0.5;
         }
