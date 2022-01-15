@@ -89,11 +89,12 @@ namespace Blitz2022
 
         public List<Position> DropablePositions()
         {
-            var adjCase = WalkableAdjacentPositions();
-            List<Position> emptyTiles = new List<Position>();
-
-            emptyTiles = adjCase;
-            return emptyTiles;
+            return WalkableAdjacentPositions();
+        }
+        
+        public List<Position> AdjacentAllies()
+        {
+            return AdjacentPositions().Where(pos => UnitManager.allies.Select(ally => ally.position).ToList().Contains(pos));
         }
     }
 
@@ -204,14 +205,14 @@ namespace Blitz2022
             double move = MoveValue();
             double upgrade = UpgradeValue();
 
+            if (drop > move && drop > upgrade)
+            {
+                return DropAction();
+            }
             if (killViner)
             {
                 killViner = false;
                 return new Action(UnitActionType.ATTACK, id, killTarget);
-            }
-            else if (drop > move && drop > upgrade)
-            {
-                return DropAction();
             }
             else if (move > drop && move > upgrade)
             {
@@ -229,10 +230,13 @@ namespace Blitz2022
 
         public double DropValue()
         {
-            //TODO si ennemie proche
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
+            if (tickLeft <= MapManager.message.teams.Count+2 && !DropablePositions().Any())
+            {
+                return int.MaxValue;
+            }
             if (tickLeft <= MapManager.message.teams.Count)
             {
                 return int.MaxValue;
@@ -288,8 +292,7 @@ namespace Blitz2022
         {
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
-
-            //TODO minus si ennemie trop proche
+            
             var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
             var minDistanceToSummon = diamond.summonLevel + 1 + (UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId) ? 1 : 0);
             if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && dist > minDistanceToSummon)
