@@ -9,7 +9,7 @@ namespace Blitz2022
 {
     public class Bot
     {
-        public static string NAME = "MyBot C♭";
+        public static string NAME = "GUY";
 
         public Bot()
         {
