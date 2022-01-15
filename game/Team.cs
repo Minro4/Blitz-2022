@@ -178,6 +178,7 @@ namespace Blitz2022
             {
                 var bestDiamond = closestFreeDiamonds.First();
                 targetMovePos = bestDiamond.position;
+                bestDiamond.setUnavailable();
                 return bestDiamond.Value();
             }
 
