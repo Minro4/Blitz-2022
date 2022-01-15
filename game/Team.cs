@@ -89,7 +89,26 @@ namespace Blitz2022
 
         public List<Position> DropablePositions()
         {
-            return AdjacentPositions().Where(MapManager.isEmpty).ToList();
+            var adjCase = AdjacentPositions().Where(MapManager.isEmpty).ToList();
+            List<Position> emptyTiles = new List<Position>();
+
+            foreach(Position pos in adjCase)  
+            {
+                bool valid=true;
+                foreach (Unit enemie in UnitManager.enemies)
+                {
+                    if (enemie.position.Equals(pos))
+                    {
+                        valid = false;
+                    }
+                }
+
+                if (valid) 
+                {
+                    emptyTiles.Add(pos);
+                }
+            }
+            return emptyTiles;
         }
     }
 
@@ -250,6 +269,7 @@ namespace Blitz2022
 
             if (MapManager.isVinableByOtherTeams(position, teamId))
             {
+                //try to find escape route
                 var positions = WalkableAdjacentPositions();
                 foreach (Map.Position pos in positions)
                 {
@@ -258,6 +278,9 @@ namespace Blitz2022
                         return (diamond.points + diamond.summonLevel) * 2;
                     }
                 }
+
+                // no escape possible
+                return 0;
             }
 
             return diamond.points + diamond.summonLevel;
@@ -307,6 +330,7 @@ namespace Blitz2022
         public Action MoveAction()
         {
             var positions = WalkableAdjacentPositions();
+            positions.Add(position);
             var positionFarthestFromEnemies = positions.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos));
 
             foreach (Position pos in positionFarthestFromEnemies.Reverse<Position>())
