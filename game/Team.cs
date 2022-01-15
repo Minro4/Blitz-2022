@@ -131,6 +131,8 @@ namespace Blitz2022
 
         public int KillValue()
         {
+            if (position.tileType() == TileType.SPAWN) return -1;
+
             var adjacentEnemy = UnitManager.AdjacentEnemies(position).Where(unit => unit.position.tileType() != TileType.SPAWN);
             if (adjacentEnemy.Any())
             {
@@ -184,7 +186,7 @@ namespace Blitz2022
                 return closest.Value() * 1.25;
             }
 
-            var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).First();
+            var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).FirstOrDefault();
             targetMovePos = MapManager.FirstAvailablePositionToGoTo(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
             return closestFriendlyDiamond.Value() * 0.5;
         }

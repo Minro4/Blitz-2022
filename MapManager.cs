@@ -95,7 +95,8 @@ namespace Blitz2022
             //return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
             var path = Path(from, to);
 
-            return (int)path.Distance.Meters;
+            bool invalidPath =  path.Edges.Count() == 0 || path.Edges[path.Edges.Count()-1].End.Position.X != to.x || path.Edges[path.Edges.Count()-1].End.Position.Y != to.y;
+            return invalidPath ? int.MaxValue : (int)path.Distance.Meters ;
         }
 
         public static Path Path(Map.Position from, Map.Position to)
@@ -118,18 +119,20 @@ namespace Blitz2022
 
         public static List<Map.Diamond> DiamondsByValue(Map.Position from)
         {
-            return message.map.diamonds.OrderBy(diamond => diamond.ValueFromPosition(from)).ToList();
+            var viableDiamonds = message.map.diamonds.Where(diamond => diamond.ValueFromPosition(from) != 0).ToList();
+            return viableDiamonds != null ? viableDiamonds.OrderBy(diamond => diamond.ValueFromPosition(from)).ToList() : null;
         }
 
         public static List<Map.Diamond> AvailableDiamondsByValue(Map.Position from)
         {
             List<Map.Diamond> diamondsByDistance = DiamondsByValue(from);
-            return diamondsByDistance.Where(x => x.isAvailable).ToList();
+            return diamondsByDistance != null ? diamondsByDistance.Where(x => x.isAvailable).ToList() : null;
         }
 
         public static Map.Diamond GetBestDiamond(Map.Position from)
         {
-            return AvailableDiamondsByValue(from).FirstOrDefault();
+            var bestDiamond = AvailableDiamondsByValue(from).LastOrDefault();
+            return bestDiamond != null ? bestDiamond : null;
         }
 
         private static int getWallMaxX(Map.Position from)
