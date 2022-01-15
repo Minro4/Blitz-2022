@@ -146,7 +146,7 @@ namespace Blitz2022
                 {
                     //position de l'ennemi dans l'ordre du tour
                     int enemyTeamIndex = MapManager.message.teamPlayOrderings[0].Select((s, i) => new { teamId = s, index = i }).FirstOrDefault(x => x.teamId.Equals(unit.teamId)).index;
-                    //position de notre équipe dans l'ordre du tour
+                    //position de notre ï¿½quipe dans l'ordre du tour
                     int myTeamIndex = MapManager.message.teamPlayOrderings[0].Select((s, i) => new { teamId = s, index = i }).FirstOrDefault(x => x.teamId.Equals(MapManager.message.teamId)).index;
                     
                     //Si on jour avant, on le vine
@@ -224,11 +224,15 @@ namespace Blitz2022
             int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
             Diamond diamond = getDiamond();
 
-            if (tickLeft == 2)
+            if (tickLeft < 5)
             {
                 return 1000000;
             }
-            else 
+            else if (2 > MapManager.MinimumDistanceFromEnemy(position)) 
+            {
+                return int.MaxValue;
+            }
+            else
             {
                  return diamond.points;
             }
