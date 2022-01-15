@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Blitz2021;
@@ -48,10 +48,9 @@ namespace Blitz2022
             //TODO
             return new List<Map.Diamond>();
         }
-        public static Map.Diamond ClosestDiamond(Map.Position from)
+        public static Map.Diamond GetClosestDiamond(Map.Position from)
         {
-            DiamondsByDistance(from).First();
-            return null;
+            return DiamondsByDistance(from).First();
         }
 
         private static int getWallMaxX(Map.Position from) 
