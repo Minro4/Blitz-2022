@@ -37,7 +37,7 @@ namespace Blitz2022
 
         public static int Distance(Map.Position from, Map.Position to)
         {
-            return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
+            //return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
             var path = Pathfinding.Path(message, from, to);
 
             return (int)path.Distance.Meters;
