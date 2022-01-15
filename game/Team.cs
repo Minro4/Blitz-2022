@@ -134,7 +134,7 @@ namespace Blitz2022
         public int MoveValue()
         {
             List<Diamond> diamondsByDistance = MapManager.AvailableDiamondsByDistance(this.position);
-            int maxvalue = 0;
+            int maxvalue = -1;
 
             foreach (Diamond diamond in diamondsByDistance)
             {
@@ -172,16 +172,7 @@ namespace Blitz2022
 
             if (drop > move && drop > upgrade)
             {
-                var dropPosition = DropablePositions();
-                if (dropPosition.Count > 0)
-                {
-                    return new Action(UnitActionType.DROP, id, dropPosition[0]);
-                }
-                else 
-                {
-                    return new Action(UnitActionType.NONE, id, position);
-                }
-                
+                return DropAction();
             }
             else if (move > drop && move > upgrade)
             {
@@ -253,6 +244,19 @@ namespace Blitz2022
             }
 
             return null;
+        }
+
+        public Action DropAction() 
+        {
+            var dropPosition = DropablePositions();
+            if (dropPosition.Count > 0)
+            {
+                return new Action(UnitActionType.DROP, id, dropPosition[0]);
+            }
+            else
+            {
+                return new Action(UnitActionType.NONE, id, position);
+            }
         }
 
         public Action MoveAction()
