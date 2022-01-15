@@ -353,7 +353,7 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            var optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
+            var optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
             MapManager.GetBestDiamond(optimalSpawnPosition)?.setUnavailable();
             return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
         }
