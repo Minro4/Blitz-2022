@@ -197,13 +197,21 @@ namespace Blitz2022
         {
         }
 
+        private bool killViner;
+        private Map.Position killTarget;
+
         public override Action NextAction()
         {
             double drop = DropValue();
             double move = MoveValue();
             double upgrade = UpgradeValue();
 
-            if (drop > move && drop > upgrade)
+            if (killViner)
+            {
+                killViner = false;
+                return new Action(UnitActionType.ATTACK, id, killTarget);
+            }
+            else if (drop > move && drop > upgrade)
             {
                 return DropAction();
             }
@@ -258,8 +266,14 @@ namespace Blitz2022
                         return (diamond.points + diamond.summonLevel) * 2;
                     }
                 }
-
                 // no escape possible
+                Unit viner = MapManager.vinableFrom(position).First();
+                if (!UnitManager.MyTeamPlaysBefore(viner.teamId))
+                {
+                    killViner = true;
+                    killTarget = viner.position;
+                }
+                
                 return 0;
             }
 
