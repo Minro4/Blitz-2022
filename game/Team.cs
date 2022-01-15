@@ -198,7 +198,7 @@ namespace Blitz2022
                     return bestDiamond.ValueFromPosition(position);
                 }
 
-                targetMovePos = bestDiamond.position;
+                targetMovePos = MapManager.FollowPath(position, bestDiamond.position);
                 bestDiamond.setUnavailable();
                 return bestDiamond.Value();
             }
@@ -389,8 +389,8 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            //var optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
-            var optimalSpawnPosition = MapManager.getBestSpawnPosition();
+            var optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
+            //var optimalSpawnPosition = MapManager.getBestSpawnPosition();
             MapManager.GetBestDiamond(optimalSpawnPosition)?.setUnavailable();
             return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
         }
