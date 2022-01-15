@@ -13,21 +13,20 @@ namespace Blitz2021
         private static Grid gridOutsideSpawn;
 
         private readonly static Velocity traversalVelocity = Velocity.FromKilometersPerHour(100);
-        
+
         private static bool isInitialized = false;
 
         public static void Initialize(GameMessage gameMessage)
         {
-        if (isInitialized)
-        {
-        return;
-        }
-        isInitialized = true;
+            if (isInitialized)
+            {
+                return;
+            }
+
+            isInitialized = true;
             pathFinder = new PathFinder();
             gridInsideSpawn = CreateGrid(gameMessage, true);
             gridOutsideSpawn = CreateGrid(gameMessage, false);
-            
-            
         }
 
         public static Grid CreateGrid(GameMessage gameMessage, bool isFromInsideSpawn)
@@ -58,7 +57,7 @@ namespace Blitz2021
             var tileType = gameMessage.map.getTileTypeAt(pos);
             return tileType != Map.TileType.WALL && (isFromInsideSpawn || tileType != Map.TileType.SPAWN);
         }
- 
+
         public static Path Path(GameMessage gameMessage, Map.Position from, Map.Position to)
         {
             if (gameMessage.map.getTileTypeAt(from) == Map.TileType.SPAWN)

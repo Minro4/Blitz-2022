@@ -38,9 +38,14 @@ namespace Blitz2022
         public static int Distance(Map.Position from, Map.Position to)
         {
             //return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
-            var path = Pathfinding.Path(message, from, to);
+            var path = Path(from, to);
 
             return (int)path.Distance.Meters;
+        }
+
+        public static Path Path(Map.Position from, Map.Position to)
+        {
+            return Pathfinding.Path(message, from, to);
         }
 
         public static int MinimumDistanceFromEnemy(Map.Position pos)
@@ -149,7 +154,7 @@ namespace Blitz2022
             {
                 foreach (Unit unit in team.units)
                 {
-                    if (unit.position != null) 
+                    if (unit.position != null)
                     {
                         if (unit.position.y == from.y)
                         {
@@ -234,6 +239,21 @@ namespace Blitz2022
         public static bool IsTheClosestUnitToPosition(Map.Position from, Map.Position to)
         {
             return true;
+        }
+        
+        public static Map.Position FirstAvailablePositionToGoTo(Map.Position from, Map.Position to)
+        {
+            var path = Path(from, to).Edges;
+            foreach (var edge in path.Reverse())
+            {
+                var pos = new Map.Position((int)edge.End.Position.X, (int)edge.End.Position.Y);
+                if (isEmpty(pos))
+                {
+                    return pos;
+                }
+            }
+            
+            return null;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Blitz2021;
 using static Blitz2022.Action;
 using static Blitz2022.Map;
 
@@ -174,20 +175,22 @@ namespace Blitz2022
                 targetMovePos = bestDiamond.position;
                 return bestDiamond.Value();
             }
-            
+
             var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned() || diamond.isFree()).ToList();
             if (diamondsByValue.Any())
             {
                 var closest = enemyDiamonds.First();
-                targetMovePos = closest.position;
-                return closest.Value() * 1.5;
+                var firstAvailablePos = MapManager.FirstAvailablePositionToGoTo(position, closest.position);
+                targetMovePos = firstAvailablePos ?? closest.position;
+                return closest.Value() * 1.25;
             }
 
             var closestFriendlyDiamond = diamondsByValue.First();
-            targetMovePos = closestFriendlyDiamond.position;
+            targetMovePos = MapManager.FirstAvailablePositionToGoTo(position, closestFriendlyDiamond.position) ?? closestFriendlyDiamond.position;
             return closestFriendlyDiamond.Value() * 0.5;
         }
     }
+
 
     public class UnitWithDiamond : Unit
     {
@@ -225,9 +228,9 @@ namespace Blitz2022
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft < 2)
+            if (tickLeft < 2 || MapManager.message.teams.Count == 4 && tickLeft < 4)
             {
-                return 1000000;
+                return int.MaxValue;
             }
             else if (2 > MapManager.MinimumDistanceFromEnemy(position))
             {

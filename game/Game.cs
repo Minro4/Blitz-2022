@@ -77,7 +77,6 @@ namespace Blitz2022
             public bool IsClosest(Map.Position from)
             {
                 var distanceToDiamond = MapManager.Distance(from, position);
-                Console.WriteLine(distanceToDiamond);
                 if (distanceToDiamond == int.MaxValue)
                 {
                     return false;
@@ -134,6 +133,24 @@ namespace Blitz2022
 
                 return base.Equals(obj);
             }
+            
+            public static bool operator ==(Position a, Position b)
+            {
+                if (a is null)
+                {
+                    if (b is null)
+                    {
+                        return true;
+                    }
+
+                    // Only the left side is null.
+                    return false;
+                }
+                // Equals handles case of null on right side.
+                return a.Equals(b);
+            }
+            
+            public static bool operator !=(Position a, Position b) => !(a == b);
         }
 
         public enum TileType
