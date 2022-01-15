@@ -188,6 +188,22 @@ namespace Blitz2022
             return false;
         }
 
+        public static bool isVinableByOtherTeams(Map.Position from, string teamId)
+        {
+            List<Unit> unites = vinableFrom(from);
+
+            foreach (Unit unite in unites)
+            {
+                if (unite.teamId != teamId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
         public static bool isWallInGame(Map.TileType tile)
         {
             return tile == Map.TileType.SPAWN || tile == Map.TileType.WALL;

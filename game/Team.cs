@@ -214,6 +214,18 @@ namespace Blitz2022
             int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
             Diamond diamond = getDiamond();
 
+            if (MapManager.isVinableByOtherTeams(position, teamId)) 
+            {
+                var positions = WalkableAdjacentPositions();
+                foreach (Map.Position pos in positions) 
+                {
+                    if (MapManager.isVinableByOtherTeams(position, teamId)) 
+                    {
+                        return (diamond.points + diamond.summonLevel) * 2;
+                    }
+                }
+            }
+
             return diamond.points + diamond.summonLevel;
         }
 
@@ -224,7 +236,7 @@ namespace Blitz2022
             Diamond diamond = getDiamond();
 
             //TODO minus si ennemie trop proche
-            if (diamond.summonLevel < 5)
+            if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && 2 < MapManager.MinimumDistanceFromEnemy(position))
             {
                 return tickLeft * (diamond.summonLevel + 1) - diamond.summonLevel;
             }
@@ -260,9 +272,17 @@ namespace Blitz2022
 
         public Action MoveAction()
         {
-            var position = WalkableAdjacentPositions();
-            var positionFarthestFromEnemies = position.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos)).Last();
-            return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies);
+            var positions = WalkableAdjacentPositions();
+            var positionFarthestFromEnemies = positions.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos));
+
+            foreach (Position pos in positionFarthestFromEnemies.Reverse<Position>()) 
+            {
+                if (MapManager.isVinableByOtherTeams(position, teamId))
+                {
+                   return new Action(UnitActionType.MOVE, id, pos);
+                }
+            }
+            return new Action(UnitActionType.MOVE, id, positionFarthestFromEnemies.Last());
         }
     }
 
