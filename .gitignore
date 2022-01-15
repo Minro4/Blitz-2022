@@ -2,3 +2,7 @@ bin
 obj
 bot/Application.pdb
 bot/Application.dll
+*.pdb~6b6af1bb6bed147c9e97733fc6fcc9bea6226725
+bot/Application.dll
+bot/Application.dll~6b6af1bb6bed147c9e97733fc6fcc9bea6226725
+bot/Application.pdb
