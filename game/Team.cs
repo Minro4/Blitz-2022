@@ -84,30 +84,15 @@ namespace Blitz2022
 
         public List<Position> WalkableAdjacentPositions()
         {
-            return AdjacentPositions().Where(pos => MapManager.isWalkable(position, pos)).ToList();
+            return AdjacentPositions().Where(pos => MapManager.isWalkable(position, pos) && !MapManager.isPlayerOnPosition(pos)).ToList();
         }
 
         public List<Position> DropablePositions()
         {
-            var adjCase = AdjacentPositions().Where(MapManager.isEmpty).ToList();
+            var adjCase = WalkableAdjacentPositions();
             List<Position> emptyTiles = new List<Position>();
 
-            foreach(Position pos in adjCase)  
-            {
-                bool valid=true;
-                foreach (Unit enemie in UnitManager.enemies)
-                {
-                    if (enemie.position.Equals(pos))
-                    {
-                        valid = false;
-                    }
-                }
-
-                if (valid) 
-                {
-                    emptyTiles.Add(pos);
-                }
-            }
+            emptyTiles = adjCase;
             return emptyTiles;
         }
     }
@@ -316,7 +301,7 @@ namespace Blitz2022
 
         public Action DropAction()
         {
-            var dropPosition = DropablePositions();
+            var dropPosition = WalkableAdjacentPositions();
             if (dropPosition.Count > 0)
             {
                 return new Action(UnitActionType.DROP, id, dropPosition[0]);
