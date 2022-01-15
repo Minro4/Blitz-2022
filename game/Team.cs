@@ -266,6 +266,7 @@ namespace Blitz2022
 
             if (MapManager.isVinableByOtherTeams(position, teamId))
             {
+                //try to find escape route
                 var positions = WalkableAdjacentPositions();
                 foreach (Map.Position pos in positions)
                 {
@@ -274,6 +275,9 @@ namespace Blitz2022
                         return (diamond.points + diamond.summonLevel) * 2;
                     }
                 }
+
+                // no escape possible
+                return 0;
             }
 
             return diamond.points + diamond.summonLevel;
@@ -323,6 +327,7 @@ namespace Blitz2022
         public Action MoveAction()
         {
             var positions = WalkableAdjacentPositions();
+            positions.Add(position);
             var positionFarthestFromEnemies = positions.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos));
 
             foreach (Position pos in positionFarthestFromEnemies.Reverse<Position>())
