@@ -48,9 +48,9 @@ namespace Blitz2022
             return Distance(pos,closestEnemy.position);
         }
 
-        public static IOrderedEnumerable<Map.Diamond> DiamondsByDistance(Map.Position from)
+        public static List<Map.Diamond> DiamondsByDistance(Map.Position from)
         {
-            return message.map.diamonds.OrderBy(diamond => Distance(from,diamond.position));
+            return message.map.diamonds.OrderBy(diamond => Distance(from,diamond.position)).ToList();
         }
 
         public static List<Map.Diamond> AvailableDiamondsByDistance(Map.Position from)
