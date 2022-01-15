@@ -88,7 +88,26 @@ namespace Blitz2022
 
         public List<Position> DropablePositions()
         {
-            return AdjacentPositions().Where(MapManager.isEmpty).ToList();
+            var adjCase = AdjacentPositions().Where(MapManager.isEmpty).ToList();
+            List<Position> emptyTiles = new List<Position>();
+
+            foreach(Position pos in adjCase)  
+            {
+                bool valid=true;
+                foreach (Unit enemie in UnitManager.enemies)
+                {
+                    if (enemie.position.Equals(pos))
+                    {
+                        valid = false;
+                    }
+                }
+
+                if (valid) 
+                {
+                    emptyTiles.Add(pos);
+                }
+            }
+            return emptyTiles;
         }
     }
 
