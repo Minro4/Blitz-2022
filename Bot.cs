@@ -29,18 +29,8 @@ namespace Blitz2022
                 Pathfinding.Initialize(gameMessage);
                 MapManager.Initialize(gameMessage);
                 UnitManager.Initialize(gameMessage);
-                
-                Team myTeam = gameMessage.getTeamsMapById[gameMessage.teamId];
 
-                var unitsByLifeStatus = myTeam.units.GroupBy(unit => unit.hasSpawned).ToDictionary(group => group.Key, group => group.ToList());
-                List<Unit> deadUnits = unitsByLifeStatus.ContainsKey(false) ? unitsByLifeStatus[false] : new List<Unit>();
-                List<Unit> aliveUnits = unitsByLifeStatus.ContainsKey(true) ? unitsByLifeStatus[true] : new List<Unit>();
-
-                actions.AddRange(deadUnits.Select(unit => new Action(UnitActionType.SPAWN, unit.id, findRandomSpawn(gameMessage.map))).ToList<Action>());
-                actions.AddRange(aliveUnits.Select(unit =>
-                        new Action(UnitActionType.MOVE, unit.id, getRandomPosition(gameMessage.map.horizontalSize(), gameMessage.map.verticalSize())))
-                    .ToList<Action>());
-
+                actions = UnitManager.units.Select(unit => unit.NextAction()).ToList();
                 return new GameCommand(actions);
             }
             catch (Exception ex)
