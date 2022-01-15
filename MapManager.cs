@@ -149,19 +149,22 @@ namespace Blitz2022
             {
                 foreach (Unit unit in team.units)
                 {
-                    if (unit.position.y == from.y)
+                    if (unit.position != null) 
                     {
-                        if (unit.position.x > wallMinX && unit.position.x < wallMaxX)
+                        if (unit.position.y == from.y)
                         {
-                            vinableUnit.Add(unit);
+                            if (unit.position.x > wallMinX && unit.position.x < wallMaxX)
+                            {
+                                vinableUnit.Add(unit);
+                            }
                         }
-                    }
 
-                    if (unit.position.x == from.x)
-                    {
-                        if (unit.position.y > wallMinY && unit.position.y < wallMaxY)
+                        if (unit.position.x == from.x)
                         {
-                            vinableUnit.Add(unit);
+                            if (unit.position.y > wallMinY && unit.position.y < wallMaxY)
+                            {
+                                vinableUnit.Add(unit);
+                            }
                         }
                     }
                 }
