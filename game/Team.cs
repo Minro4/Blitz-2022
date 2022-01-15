@@ -131,7 +131,8 @@ namespace Blitz2022
 
         public int KillValue()
         {
-            if (position.tileType() == TileType.SPAWN) return -1;
+            if (position.tileType() == TileType.SPAWN)
+                return -1;
 
             var adjacentEnemy = UnitManager.AdjacentEnemies(position).Where(unit => unit.position.tileType() != TileType.SPAWN);
             if (adjacentEnemy.Any())
@@ -165,25 +166,19 @@ namespace Blitz2022
 
         public double MoveValue()
         {
-            List<Diamond> diamondsByValue = MapManager.AvailableDiamondsByValue(this.position);
-
-            //var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosest(position) && diamond.isFree()).ToList();
-            var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosestFromAlie(position,teamId) && diamond.isFree()).ToList();
-            if (closestFreeDiamonds.Any())
+            var bestDiamond = MapManager.GetBestDiamond(position);
+            if (bestDiamond != null)
             {
-                var bestDiamond = closestFreeDiamonds.Last();
+                if (bestDiamond.isEnemyOwned())
+                {
+                    var firstAvailablePos = MapManager.FirstAvailablePositionToGoTo(position, bestDiamond.position);
+                    targetMovePos = firstAvailablePos ?? bestDiamond.position;
+                    return bestDiamond.ValueFromPosition(position);
+                }
+
                 targetMovePos = bestDiamond.position;
                 bestDiamond.setUnavailable();
                 return bestDiamond.Value();
-            }
-
-            var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned () || diamond.isFree()).ToList();
-            if (diamondsByValue.Any())
-            {
-                var closest = enemyDiamonds.Last();
-                var firstAvailablePos = MapManager.FirstAvailablePositionToGoTo(position, closest.position);
-                targetMovePos = firstAvailablePos ?? closest.position;
-                return closest.Value() * 1.25;
             }
 
             var closestFriendlyDiamond = MapManager.DiamondsByValue(this.position).FirstOrDefault();
@@ -269,6 +264,7 @@ namespace Blitz2022
                         return (diamond.points + diamond.summonLevel) * 2;
                     }
                 }
+
                 // no escape possible
                 Unit viner = MapManager.vinableFrom(position).First();
                 if (!UnitManager.MyTeamPlaysBefore(viner.teamId))
@@ -276,7 +272,7 @@ namespace Blitz2022
                     killViner = true;
                     killTarget = viner.position;
                 }
-                
+
                 return 0;
             }
 
