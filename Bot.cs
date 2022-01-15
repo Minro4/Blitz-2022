@@ -24,11 +24,11 @@ namespace Blitz2022
         {
             List<Action> actions = new List<Action>();
 
-            //Pathfinding.Initialize(gameMessage);
+            Pathfinding.Initialize(gameMessage);
             MapManager.Initialize(gameMessage);
             UnitManager.Initialize(gameMessage);
 
-            actions = UnitManager.units.Select(unit => unit.NextAction()).ToList();
+            actions = UnitManager.allies.Select(unit => unit.NextAction()).ToList();
             return new GameCommand(actions);
         }
 
