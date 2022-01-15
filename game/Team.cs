@@ -171,16 +171,16 @@ namespace Blitz2022
             var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosestFromAlie(position,teamId) && diamond.isFree()).ToList();
             if (closestFreeDiamonds.Any())
             {
-                var bestDiamond = closestFreeDiamonds.First();
+                var bestDiamond = closestFreeDiamonds.Last();
                 targetMovePos = bestDiamond.position;
                 bestDiamond.setUnavailable();
                 return bestDiamond.Value();
             }
 
-            var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned() || diamond.isFree()).ToList();
+            var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned () || diamond.isFree()).ToList();
             if (diamondsByValue.Any())
             {
-                var closest = enemyDiamonds.First();
+                var closest = enemyDiamonds.Last();
                 var firstAvailablePos = MapManager.FirstAvailablePositionToGoTo(position, closest.position);
                 targetMovePos = firstAvailablePos ?? closest.position;
                 return closest.Value() * 1.25;
@@ -237,7 +237,7 @@ namespace Blitz2022
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft < 2 || MapManager.message.teams.Count == 4 && tickLeft < 4)
+            if (tickLeft <= MapManager.message.teams.Count)
             {
                 return int.MaxValue;
             }
