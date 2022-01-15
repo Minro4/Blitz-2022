@@ -77,19 +77,31 @@ namespace Blitz2022
         {
         }
 
+        private Map.Position targetPos;
+
         public override Action NextAction()
         {
-            //TODO
-            return null;
+            if(MoveValue() > KillValue())
+            {
+                return new Action(UnitActionType.MOVE, id, targetPos);
+            }
+            else if (KillValue() > MoveValue())
+            {
+                return new Action(UnitActionType.ATTACK, id, targetPos);
+            }
+            return new Action(UnitActionType.NONE, id, position);
         }
 
         public int KillValue()
         {
             List<Unit> adjacentEnemy = UnitManager.AdjacentEnemies(this.position);
             if (adjacentEnemy.Any())
+            {
+                targetPos = adjacentEnemy[0].position;
                 return 10000;
-
-            return 0;
+            }
+                
+            return -1;
         }
 
         public int MoveValue()
@@ -101,9 +113,14 @@ namespace Blitz2022
             {
                 if(diamond.IsClosest(this.position))
                 {
+                    //TODO
                     //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
                     int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
-                    maxvalue = Math.Max(maxvalue, diamondValue);
+                    if(maxvalue <= diamondValue)
+                    {
+                        maxvalue = diamondValue;
+                        targetPos = diamond.position;
+                    }
                 }
             }
 
