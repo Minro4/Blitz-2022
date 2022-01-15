@@ -193,9 +193,13 @@ namespace Blitz2022
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft == 1)
+            if (tickLeft < 5)
             {
                 return 1000000;
+            }
+            else if (2 > MapManager.MinimumDistanceFromEnemy(position)) 
+            {
+                return int.MaxValue;
             }
             else
             {
