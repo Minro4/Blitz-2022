@@ -25,9 +25,11 @@ namespace Blitz2022
             List<Action> actions = new List<Action>();
             try
             {
+                
                 Pathfinding.Initialize(gameMessage);
                 MapManager.Initialize(gameMessage);
-
+                UnitManager.ConvertTeamUnits(gameMessage);
+                
                 Team myTeam = gameMessage.getTeamsMapById[gameMessage.teamId];
 
                 var unitsByLifeStatus = myTeam.units.GroupBy(unit => unit.hasSpawned).ToDictionary(group => group.Key, group => group.ToList());
