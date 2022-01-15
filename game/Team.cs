@@ -69,6 +69,27 @@ namespace Blitz2022
         {
             return MapManager.isVinable(position, teamId);
         }
+
+        public List<Position> AdjacentPositions()
+        {
+            return new List<Position>()
+            {
+                new Position(position.x, position.y + 1),
+                new Position(position.x, position.y - 1),
+                new Position(position.x + 1, position.y),
+                new Position(position.x - 1, position.y),
+            };
+        }
+
+        public List<Position> WalkableAdjacentPositions()
+        {
+            return AdjacentPositions().Where(pos => MapManager.isWalkable(position, pos)).ToList();
+        }
+        
+        public List<Position> DropablePositions()
+        {
+            return AdjacentPositions().Where(MapManager.isEmpty).ToList();
+        }
     }
 
     public class UnitWithoutDiamond : Unit
@@ -137,7 +158,7 @@ namespace Blitz2022
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position,spawnFrom);
+            return MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom);
         }
     }
 

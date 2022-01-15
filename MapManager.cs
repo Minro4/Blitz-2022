@@ -178,11 +178,20 @@ namespace Blitz2022
             //In how many turns will this position be vinable if the player is from teamId
             return 1000;
         }
-
-        /*
-        public static bool IsTheClosestUnitToPosition(Map.Position from, Map.Position to)
+        
+        public static bool isWalkable(Map.Position from, Map.Position to)
         {
-            
-        }*/
+            return isEmpty(to) && !(from.tileType() == Map.TileType.EMPTY && to.tileType() == Map.TileType.SPAWN);
+        }
+
+        public static bool isEmpty(Map.Position position)
+        {
+            return message.map.getTileTypeAt(position) != Map.TileType.WALL && !isPlayerOnPosition(position);
+        }
+
+        public static bool isPlayerOnPosition(Map.Position position)
+        {
+            return UnitManager.units.Find(unit => unit.position == position) != null;
+        }
     }
 }

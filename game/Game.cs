@@ -16,7 +16,7 @@ namespace Blitz2022
             public int points;
             public string ownerId;
             public bool isAvailable = true;
-            
+
             public int Value()
             {
                 //TODO
@@ -38,7 +38,7 @@ namespace Blitz2022
 
                 var distances = UnitManager.units.Where(unit => !unit.hasDiamond).Select(unit => MapManager.Distance(unit.position, position));
                 var minDist = distances.Min();
-                
+
                 return distanceToDiamond <= minDist;
             }
         }
@@ -50,6 +50,7 @@ namespace Blitz2022
                 this.x = x;
                 this.y = y;
             }
+
             public int x;
             public int y;
 
@@ -57,24 +58,34 @@ namespace Blitz2022
             {
                 return string.Format("P({0},{1})", this.x, this.y);
             }
+
             public bool isVinable(string teamId)
             {
                 //TODO
                 // return mapManager.isvinable
                 return false;
             }
+
+            public TileType tileType()
+            {
+                MapManager.message.map.getTileTypeAt(this);
+            }
         }
 
         public enum TileType
         {
-            EMPTY, WALL, SPAWN
+            EMPTY,
+            WALL,
+            SPAWN
         }
 
         public class PointOutOfMapException : Exception
         {
             public PointOutOfMapException(Position position, int horizontalSize, int verticalSize)
-            : base(String.Format("Point {0} is out of map, x and y must be greater than 0 and x less than {1} and y less than {2}.", position, horizontalSize, verticalSize))
-            { }
+                : base(String.Format("Point {0} is out of map, x and y must be greater than 0 and x less than {1} and y less than {2}.", position,
+                    horizontalSize, verticalSize))
+            {
+            }
         }
 
         public int horizontalSize()
