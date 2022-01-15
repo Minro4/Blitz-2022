@@ -14,6 +14,20 @@ namespace Blitz2022
             public int summonLevel;
             public int points;
             public string ownerId;
+            public bool isAvailable = true;
+            
+            public int Value()
+            {
+                //TODO
+                return points;
+            }
+
+            public void setUnavailable()
+            {
+                isAvailble = false;
+            }
+            
+            
         }
 
         public class Position
@@ -29,6 +43,12 @@ namespace Blitz2022
             public override string ToString()
             {
                 return string.Format("P({0},{1})", this.x, this.y);
+            }
+            public bool isVinable(string teamId)
+            {
+                //TODO
+                // return mapManager.isvinable
+                return false;
             }
         }
 
