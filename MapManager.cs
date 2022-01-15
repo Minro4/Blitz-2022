@@ -59,20 +59,20 @@ namespace Blitz2022
             }
         }
 
-        public static List<Map.Diamond> DiamondsByDistance(Map.Position from)
+        public static List<Map.Diamond> DiamondsByValue(Map.Position from)
         {
-            return message.map.diamonds.OrderBy(diamond => Distance(from, diamond.position)).ToList();
+            return message.map.diamonds.OrderBy(diamond => diamond.ValueFromPosition(from)).ToList();
         }
 
-        public static List<Map.Diamond> AvailableDiamondsByDistance(Map.Position from)
+        public static List<Map.Diamond> AvailableDiamondsByValue(Map.Position from)
         {
-            List<Map.Diamond> diamondsByDistance = DiamondsByDistance(from);
+            List<Map.Diamond> diamondsByDistance = DiamondsByValue(from);
             return diamondsByDistance.Where(x => x.isAvailable).ToList();
         }
 
-        public static Map.Diamond GetClosestDiamond(Map.Position from)
+        public static Map.Diamond GetBestDiamond(Map.Position from)
         {
-            return AvailableDiamondsByDistance(from).FirstOrDefault();
+            return AvailableDiamondsByValue(from).FirstOrDefault();
         }
 
         private static int getWallMaxX(Map.Position from)

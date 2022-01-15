@@ -23,6 +23,42 @@ namespace Blitz2022
                 return points + 5 * MapManager.message.remainingTicks();
             }
 
+            public int ValueFromPosition(Position from)
+            {
+                var distance = MapManager.Distance(from, position);
+                var remainingTicks = MapManager.message.remainingTicks();
+                var holdingTicks = remainingTicks - distance;
+                if (holdingTicks <= 0)
+                {
+                    return 0;
+                }
+
+                return points + Math.Max(0, holdingTicks * 5 - valueLostSummoningUpToMax());
+            }
+
+            public int valueLostSummoningUpToMax()
+            {
+                int max = 5;
+                int sum = 0;
+                for (int i = summonLevel; i < max; i++)
+                {
+                    sum += (max - i) * (i + 1);
+                }
+
+                return sum;
+            }
+
+            public int timeToSummonDiamondTo(int level)
+            {
+                int sum = 0;
+                for (int i = summonLevel + 1; i <= level; i++)
+                {
+                    sum += i;
+                }
+
+                return sum;
+            }
+
             public void setUnavailable()
             {
                 isAvailable = false;
@@ -31,6 +67,11 @@ namespace Blitz2022
             public bool isFree()
             {
                 return isAvailable && ownerId == null;
+            }
+
+            public bool isEnemyOwned()
+            {
+                return UnitManager.allies.All(ally => ally.id != ownerId);
             }
 
             public bool IsClosest(Map.Position from)

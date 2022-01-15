@@ -104,19 +104,15 @@ namespace Blitz2022
 
         public override Action NextAction()
         {
-            int moveValue = MoveValue();
+            var moveValue = MoveValue();
             int killValue = KillValue();
 
-            if (moveValue > killValue)
-            {
-                return new Action(UnitActionType.MOVE, id, targetMovePos);
-            }
-            else if (killValue > moveValue)
+            if (killValue > moveValue)
             {
                 return new Action(UnitActionType.ATTACK, id, targetKillPos);
             }
 
-            return new Action(UnitActionType.NONE, id, position);
+            return new Action(UnitActionType.MOVE, id, targetMovePos);
         }
 
         public int KillValue()
@@ -131,29 +127,29 @@ namespace Blitz2022
             return -1;
         }
 
-        public int MoveValue()
+        public double MoveValue()
         {
-            List<Diamond> diamondsByDistance = MapManager.AvailableDiamondsByDistance(this.position);
-            int maxvalue = -1;
-
-            foreach (Diamond diamond in diamondsByDistance)
+            List<Diamond> diamondsByValue = MapManager.AvailableDiamondsByValue(this.position);
+            
+            var closestFreeDiamonds = diamondsByValue.Where(diamond => diamond.IsClosest(position) && diamond.isFree()).ToList();
+            if (closestFreeDiamonds.Any())
             {
-                if (diamond.isFree() && diamond.IsClosest(position))
-                {
-                    //TODO
-                    //Faut faire un calcul plus complexe que la soustraction pour estimer la valeur
-
-                    int diamondValue = diamond.Value() - MapManager.Distance(this.position, diamond.position);
-
-                    if (maxvalue <= diamondValue)
-                    {
-                        maxvalue = diamondValue;
-                        targetMovePos = diamond.position;
-                    }
-                }
+                var bestDiamond = closestFreeDiamonds.First();
+                targetMovePos = bestDiamond.position;
+                return bestDiamond.Value();
             }
 
-            return maxvalue;
+            var enemyDiamonds = diamondsByValue.Where(diamond => diamond.isEnemyOwned() || diamond.isFree()).ToList();
+            if (enemyDiamonds.Any())
+            {
+                var closest = enemyDiamonds.First();
+                targetMovePos = closest.position;
+                return closest.Value() * 1.5;
+            }
+
+            var closestFriendlyDiamond = diamondsByValue.First();
+            targetMovePos = closestFriendlyDiamond.position;
+            return closestFriendlyDiamond.Value() * 0.5;
         }
     }
 
@@ -271,14 +267,14 @@ namespace Blitz2022
         public override Action NextAction()
         {
             var optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
-            MapManager.GetClosestDiamond(optimalSpawnPosition)?.setUnavailable();
+            MapManager.GetBestDiamond(optimalSpawnPosition)?.setUnavailable();
             return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
         }
 
         public int SpawnValue(Map.Position spawnFrom)
         {
-            var closestDiamond = MapManager.GetClosestDiamond(spawnFrom);
-            return closestDiamond != null ? MapManager.Distance(MapManager.GetClosestDiamond(spawnFrom).position, spawnFrom) : 0;
+            var closestDiamond = MapManager.GetBestDiamond(spawnFrom);
+            return closestDiamond != null ? MapManager.Distance(MapManager.GetBestDiamond(spawnFrom).position, spawnFrom) : 0;
         }
     }
 
