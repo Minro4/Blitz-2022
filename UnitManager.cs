@@ -27,6 +27,15 @@ namespace Blitz2022
             units = message.teams.SelectMany(team => team.units).ToList();
 
             teamId = message.teamId;
+
+            MapManager.Initialize(message);
+
+            if (allies.Where(unit => !unit.hasSpawned).ToList().Count>0) 
+            {
+                MapManager.updateSpawnCostMap();
+            }
+
+
         }
 
         public static List<Unit> AdjacentEnemies(Map.Position from)

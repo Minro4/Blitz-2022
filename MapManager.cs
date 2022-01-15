@@ -8,6 +8,8 @@ using System.Linq;
 
 namespace Blitz2022
 {
+   
+
     public static class MapManager
     {
         public static GameMessage message;
@@ -15,7 +17,52 @@ namespace Blitz2022
         public static List<Map.Position> spawnPositions;
         public static List<Map.Position> wallPositions;
         public static List<Map.Position> emptyPositions;
+        public static List<costMapPoint> spawnCostMap;
 
+       public class costMapPoint
+        {
+
+            public costMapPoint(Map.Position position, double cost)
+            {
+                this.cost = cost;
+                this.position = position;
+            }
+
+            public double cost;
+            public Map.Position position;
+        }
+
+        public static void updateSpawnCostMap()
+        {
+            spawnCostMap = new List<costMapPoint>();
+            foreach (Map.Position spawnPosition in spawnPositions) 
+            {
+                spawnCostMap.Add(new costMapPoint(spawnPosition, UnitDead.SpawnValue(spawnPosition)));
+            }
+        }
+
+        public static  Map.Position getBestSpawnPosition() 
+        {
+            if (spawnCostMap != null && spawnCostMap.Count > 0) 
+            {
+                double maxValue = spawnCostMap[0].cost;
+                int maxIndex = 0;
+                for (int x = 0; x < spawnCostMap.Count; x++)
+                {
+                    if (maxValue < spawnCostMap[x].cost)
+                    {
+                        maxValue = spawnCostMap[x].cost;
+                        maxIndex = x;
+                    }
+                }
+
+                Map.Position bestSpawn = spawnCostMap[maxIndex].position;
+                spawnCostMap.RemoveAt(maxIndex);
+                return bestSpawn;
+            }
+            return new Map.Position(0, 0);
+
+        }
 
         public static void Initialize(GameMessage messageParam)
         {

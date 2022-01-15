@@ -26,7 +26,7 @@ namespace Blitz2022
 
             Pathfinding.Initialize(gameMessage);
             UnitManager.Initialize(gameMessage);
-            MapManager.Initialize(gameMessage);
+            
 
             actions = UnitManager.allies.Select(unit => unit.NextAction()).ToList();
             return new GameCommand(actions);
