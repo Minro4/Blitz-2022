@@ -225,7 +225,7 @@ namespace Blitz2022
             int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft < 2)
+            if (tickLeft < 5)
             {
                 return 1000000;
             }
