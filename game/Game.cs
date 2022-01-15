@@ -71,7 +71,7 @@ namespace Blitz2022
 
             public bool isEnemyOwned()
             {
-                return UnitManager.allies.All(ally => ally.id != ownerId);
+                return ownerId != null && UnitManager.allies.All(ally => ally.id != ownerId);
             }
 
             public bool IsClosest(Map.Position from)
@@ -148,7 +148,7 @@ namespace Blitz2022
 
                 return base.Equals(obj);
             }
-            
+
             public static bool operator ==(Position a, Position b)
             {
                 if (a is null)
@@ -161,10 +161,11 @@ namespace Blitz2022
                     // Only the left side is null.
                     return false;
                 }
+
                 // Equals handles case of null on right side.
                 return a.Equals(b);
             }
-            
+
             public static bool operator !=(Position a, Position b) => !(a == b);
         }
 
