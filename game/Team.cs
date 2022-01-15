@@ -271,9 +271,12 @@ namespace Blitz2022
         public override Action NextAction()
         {
             Map.Position optimalSpawnPosition;
-            optimalSpawnPosition = MapManager.spawnPositions.MaxBy(position => SpawnValue(position));
-            Array.Find(MapManager.message.map.diamonds, element => element == MapManager.DiamondsByDistance(optimalSpawnPosition).First()).isAvailable = false;
-            return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
+            if (MapManager.message.map.diamonds.Length > 0){
+                optimalSpawnPosition = MapManager.spawnPositions.MinBy(position => SpawnValue(position));
+                Array.Find(MapManager.message.map.diamonds, element => element == MapManager.AvailableDiamondsByDistance(optimalSpawnPosition).First()).isAvailable = false;
+                return new Action(UnitActionType.SPAWN, this.id, optimalSpawnPosition);
+            }
+            return new Action(UnitActionType.NONE, this.id);
         }
 
         public int SpawnValue(Map.Position spawnFrom)
