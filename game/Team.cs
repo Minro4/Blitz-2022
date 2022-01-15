@@ -245,6 +245,11 @@ namespace Blitz2022
             }
 
             var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
+            if (enemy == null)
+            {
+                return diamond.points;
+            }
+
             var otherTeamPlaysFirst = UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId);
             var minimumDistFromEnemy = 1 + (otherTeamPlaysFirst ? 1 : 0);
 
@@ -296,7 +301,8 @@ namespace Blitz2022
             Diamond diamond = getDiamond();
 
             var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
-            var minDistanceToSummon = diamond.summonLevel + 1 + (UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId) ? 1 : 0);
+
+            var minDistanceToSummon = enemy != null ? diamond.summonLevel + 1 + (UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId) ? 1 : 0) : int.MaxValue;
             if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && dist > minDistanceToSummon)
             {
                 return tickLeft * (diamond.summonLevel + 1) - diamond.summonLevel;
