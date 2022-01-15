@@ -28,8 +28,9 @@ namespace Blitz2022
 
         public int remainingTicks()
         {
-            return totalTick - tick;
+            return totalTick - 1 - tick;
         }
+
         public Dictionary<string, Team> getTeamsMapById
         {
             get { return this.teams.ToDictionary(team => team.id, team => team); }
