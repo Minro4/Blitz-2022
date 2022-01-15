@@ -8,8 +8,6 @@ using System.Linq;
 
 namespace Blitz2022
 {
-   
-
     public static class MapManager
     {
         public static GameMessage message;
@@ -19,9 +17,8 @@ namespace Blitz2022
         public static List<Map.Position> emptyPositions;
         public static List<costMapPoint> spawnCostMap;
 
-       public class costMapPoint
+        public class costMapPoint
         {
-
             public costMapPoint(Map.Position position, double cost)
             {
                 this.cost = cost;
@@ -35,15 +32,15 @@ namespace Blitz2022
         public static void updateSpawnCostMap()
         {
             spawnCostMap = new List<costMapPoint>();
-            foreach (Map.Position spawnPosition in spawnPositions) 
+            foreach (Map.Position spawnPosition in spawnPositions)
             {
                 spawnCostMap.Add(new costMapPoint(spawnPosition, UnitDead.SpawnValue(spawnPosition)));
             }
         }
 
-        public static  Map.Position getBestSpawnPosition() 
+        public static Map.Position getBestSpawnPosition()
         {
-            if (spawnCostMap != null && spawnCostMap.Count > 0) 
+            if (spawnCostMap != null && spawnCostMap.Count > 0)
             {
                 double maxValue = spawnCostMap[0].cost;
                 int maxIndex = 0;
@@ -60,8 +57,8 @@ namespace Blitz2022
                 spawnCostMap.RemoveAt(maxIndex);
                 return bestSpawn;
             }
-            return new Map.Position(0, 0);
 
+            return new Map.Position(0, 0);
         }
 
         public static void Initialize(GameMessage messageParam)
@@ -77,14 +74,17 @@ namespace Blitz2022
                 }
             }
 
-            spawnPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.SPAWN && !MapManager.isPlayerOnPosition(position)).ToList();
+            spawnPositions = allPositions
+                .Where(position => message.map.getTileTypeAt(position) == Map.TileType.SPAWN && !MapManager.isPlayerOnPosition(position)).ToList();
             wallPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.WALL).ToList();
             emptyPositions = allPositions.Where(position => message.map.getTileTypeAt(position) == Map.TileType.EMPTY).ToList();
 
-            
+
             var alliesWithDiamonds = UnitManager.allies.Where(ally => ally.diamondId != null).ToList();
-            if (alliesWithDiamonds.Count() != 0){
-                foreach (var ally in alliesWithDiamonds){
+            if (alliesWithDiamonds.Count() != 0)
+            {
+                foreach (var ally in alliesWithDiamonds)
+                {
                     message.map.diamonds.Where(d => d.id == ally.diamondId).FirstOrDefault().setUnavailable();
                 }
             }
@@ -95,8 +95,9 @@ namespace Blitz2022
             //return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
             var path = Path(from, to);
 
-            bool invalidPath =  path.Edges.Count() == 0 || path.Edges[path.Edges.Count()-1].End.Position.X != to.x || path.Edges[path.Edges.Count()-1].End.Position.Y != to.y;
-            return invalidPath ? int.MaxValue : (int)path.Distance.Meters ;
+            bool invalidPath = path.Edges.Count() == 0 || path.Edges[path.Edges.Count() - 1].End.Position.X != to.x ||
+                               path.Edges[path.Edges.Count() - 1].End.Position.Y != to.y;
+            return invalidPath ? int.MaxValue : (int)path.Distance.Meters;
         }
 
         public static Path Path(Map.Position from, Map.Position to)
@@ -106,15 +107,12 @@ namespace Blitz2022
 
         public static (int, Unit) MinimumDistanceFromEnemy(Map.Position pos)
         {
-            try
-            {
-                var closestEnemy = UnitManager.enemies.Where(enemie => enemie.hasSpawned).OrderBy(enemy => Distance(enemy.position, pos)).First();
-                return (Distance(pos, closestEnemy.position), closestEnemy);
-            }
-            catch (InvalidOperationException)
-            {
-                return (int.MaxValue, null);
-            }
+            var spawnedEnnemies = UnitManager.enemies.Where(enemie => enemie.hasSpawned).ToList();
+
+            if (!spawnedEnnemies.Any()) return (int.MaxValue, null);
+
+            var closestEnemy = spawnedEnnemies.MinBy(enemy => Distance(enemy.position, pos));
+            return (Distance(closestEnemy.position, pos), closestEnemy);
         }
 
         public static List<Map.Diamond> DiamondsByValue(Map.Position from)
@@ -298,7 +296,7 @@ namespace Blitz2022
         {
             return true;
         }
-        
+
         public static Map.Position FirstAvailablePositionToGoTo(Map.Position from, Map.Position to)
         {
             var path = Path(from, to).Edges;
@@ -310,7 +308,7 @@ namespace Blitz2022
                     return pos;
                 }
             }
-            
+
             return null;
         }
     }
