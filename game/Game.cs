@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Blitz2022
 {
@@ -26,8 +27,20 @@ namespace Blitz2022
             {
                 isAvailable = false;
             }
-            
-            
+
+            public bool IsClosest(Map.Position from)
+            {
+                var distanceToDiamond = MapManager.Distance(from, position);
+                if (distanceToDiamond == int.MaxValue)
+                {
+                    return false;
+                }
+
+                var distances = UnitManager.units.Where(unit => !unit.hasDiamond).Select(unit => MapManager.Distance(unit.position, position));
+                var minDist = distances.Min();
+                
+                return distanceToDiamond <= minDist;
+            }
         }
 
         public class Position
