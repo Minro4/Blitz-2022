@@ -9,6 +9,9 @@ namespace Blitz2022
 {
     public class Bot
     {
+        private static List<Action> spawnActions = new List<Action>();
+        private static bool hasSpawned = false;
+        
         public static string NAME = "GUY";
 
         public Bot()
@@ -26,9 +29,24 @@ namespace Blitz2022
 
             Pathfinding.Initialize(gameMessage);
             UnitManager.Initialize(gameMessage);
-            
 
+
+            hasSpawned = hasSpawned || UnitManager.allies.Any(u => u.hasSpawned);
+            if (!hasSpawned && gameMessage.tick != 0)
+            {
+                return new GameCommand(spawnActions);
+            }
+
+            
             actions = UnitManager.allies.Select(unit => unit.NextAction()).ToList();
+
+            if (gameMessage.tick == 0)
+            {
+                spawnActions = actions;
+                return new GameCommand(spawnActions);
+            }
+            
+          
             return new GameCommand(actions);
         }
 
