@@ -104,16 +104,16 @@ namespace Blitz2022
             return Pathfinding.Path(message, from, to);
         }
 
-        public static int MinimumDistanceFromEnemy(Map.Position pos)
+        public static (int, Unit) MinimumDistanceFromEnemy(Map.Position pos)
         {
             try
             {
-                var closestEnemy = UnitManager.enemies.Where(enemie => enemie.hasSpawned).OrderBy(enemy => Distance(pos, enemy.position)).First();
-                return Distance(pos, closestEnemy.position);
+                var closestEnemy = UnitManager.enemies.Where(enemie => enemie.hasSpawned).OrderBy(enemy => Distance(enemy.position, pos)).First();
+                return (Distance(pos, closestEnemy.position), closestEnemy);
             }
             catch (InvalidOperationException)
             {
-                return int.MaxValue;
+                return (int.MaxValue, null);
             }
         }
 

@@ -237,7 +237,12 @@ namespace Blitz2022
             {
                 return int.MaxValue;
             }
-            else if (2 > MapManager.MinimumDistanceFromEnemy(position))
+
+            var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
+            var otherTeamPlaysFirst = UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId);
+            var minimumDistFromEnemy = 1 + (otherTeamPlaysFirst ? 1 : 0);
+            
+            if (dist <= minimumDistFromEnemy)
             {
                 return int.MaxValue;
             }
@@ -246,7 +251,6 @@ namespace Blitz2022
                 return diamond.points;
             }
         }
-
 
         public double MoveValue()
         {
@@ -286,7 +290,9 @@ namespace Blitz2022
             Diamond diamond = getDiamond();
 
             //TODO minus si ennemie trop proche
-            if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && 2 < MapManager.MinimumDistanceFromEnemy(position))
+            var (dist, enemy) = MapManager.MinimumDistanceFromEnemy(position);
+            var minDistanceToSummon = diamond.summonLevel + 1 + (UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId) ? 1 : 0);
+            if (diamond.summonLevel < 5 && !MapManager.isVinableByOtherTeams(position, teamId) && dist > minDistanceToSummon)
             {
                 return tickLeft * (diamond.summonLevel + 1) - diamond.summonLevel;
             }
@@ -324,7 +330,7 @@ namespace Blitz2022
         {
             var positions = WalkableAdjacentPositions();
             positions.Add(position);
-            var positionFarthestFromEnemies = positions.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos));
+            var positionFarthestFromEnemies = positions.OrderBy(pos => MapManager.MinimumDistanceFromEnemy(pos).Item1);
 
             foreach (Position pos in positionFarthestFromEnemies.Reverse<Position>())
             {
