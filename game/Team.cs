@@ -271,7 +271,7 @@ namespace Blitz2022
             }
 
             var otherTeamPlaysFirst = UnitManager.otherTeamWillPlayFirstNextTurn(enemy.teamId);
-            var minimumDistFromEnemy = 1 + (otherTeamPlaysFirst ? 1 : 0);
+            var minimumDistFromEnemy = 2 + (otherTeamPlaysFirst ? 1 : 0);
 
             if (dist <= minimumDistFromEnemy)
             {
