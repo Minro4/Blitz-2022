@@ -42,6 +42,11 @@ namespace Blitz2022
 
             return int.MaxValue;
         }
+        public static int MinimumDistanceFromEnemy(Map.Position pos)
+        {
+            var closestEnemy = UnitManager.enemies.OrderBy(enemy => Distance(pos,enemy.position)).First();
+            return Distance(pos,closestEnemy.position);
+        }
 
         public static IOrderedEnumerable<Map.Diamond> DiamondsByDistance(Map.Position from)
         {

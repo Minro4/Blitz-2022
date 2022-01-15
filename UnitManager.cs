@@ -7,6 +7,9 @@ namespace Blitz2022
     public static class UnitManager
     {
         public static List<Unit> units;
+        public static List<Unit> allies;
+        public static List<Unit> enemies;
+
         private static void ConvertTeamUnits(GameMessage message)
         {
             foreach (var team in message.teams)
@@ -17,6 +20,8 @@ namespace Blitz2022
         public static void Initialize(GameMessage message)
         {
             ConvertTeamUnits(message);
+            allies = message.teams.FindAll(teams => teams.id == message.teamId).SelectMany(team => team.units).ToList();
+            enemies = message.teams.FindAll(teams => teams.id != message.teamId).SelectMany(team => team.units).ToList();
             units = message.teams.SelectMany(team => team.units).ToList();
         }
 
