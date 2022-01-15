@@ -222,10 +222,10 @@ namespace Blitz2022
         public double DropValue()
         {
             //TODO si ennemie proche
-            int tickLeft = MapManager.message.tick - MapManager.message.totalTick;
+            int tickLeft = MapManager.message.remainingTicks();
             Diamond diamond = getDiamond();
 
-            if (tickLeft < 5)
+            if (tickLeft < 2)
             {
                 return 1000000;
             }
