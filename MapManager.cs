@@ -41,9 +41,6 @@ namespace Blitz2022
             var path = Pathfinding.Path(message, from, to);
 
             return (int)path.Distance.Meters;
-
-
-            return int.MaxValue;
         }
 
         public static int MinimumDistanceFromEnemy(Map.Position pos)
@@ -187,6 +184,22 @@ namespace Blitz2022
 
             return false;
         }
+
+        public static bool isVinableByOtherTeams(Map.Position from, string teamId)
+        {
+            List<Unit> unites = vinableFrom(from);
+
+            foreach (Unit unite in unites)
+            {
+                if (unite.teamId != teamId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
 
         public static bool isWallInGame(Map.TileType tile)
         {
